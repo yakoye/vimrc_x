@@ -1,0 +1,6 @@
+shopt -s expand_aliases
+#source ~/.bashrc
+
+alias tgg='echo "tag generate ..."; ctags -R *; find `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -Rbq; echo "Finish."'
+alias tgc='echo "tag cleaned"; rm cscope.* tags'
+alias astyle='astyle -A1 -s4 -S -N -j -m0 -M40 -c -U -H -p -n -q '

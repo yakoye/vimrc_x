@@ -1,0 +1,21 @@
+#!/bin/bash
+
+vim -u NONE -c "helptags ./opt/rainbow/doc" -c q
+vim -u NONE -c "helptags ./opt/vim-easymotion/doc" -c q
+vim -u NONE -c "helptags ./opt/neoinclude.vim/doc" -c q
+vim -u NONE -c "helptags ./opt/vim-fugitive/doc" -c q
+vim -u NONE -c "helptags ./opt/neocomplete.vim/doc" -c q
+vim -u NONE -c "helptags ./opt/syntastic/doc" -c q
+vim -u NONE -c "helptags ./opt/tagbar/doc" -c q
+vim -u NONE -c "helptags ./opt/nerdtree/doc" -c q
+vim -u NONE -c "helptags ./opt/ctrlp.vim/doc" -c q
+vim -u NONE -c "helptags ./opt/ctrlp-funky/doc" -c q
+vim -u NONE -c "helptags ./opt/auto-pairs/doc" -c q
+vim -u NONE -c "helptags ./opt/nerdcommenter/doc" -c q
+vim -u NONE -c "helptags ./opt/vim-surround/doc" -c q
+vim -u NONE -c "helptags ./opt/neosnippet/doc" -c q
+vim -u NONE -c "helptags ./opt/undotree/doc" -c q
+vim -u NONE -c "helptags ./start/LargeFile/doc" -c q
+vim -u NONE -c "helptags ./start/vim-preview/doc" -c q
+vim -u NONE -c "helptags ./start/vim-airline-themes/doc" -c q
+vim -u NONE -c "helptags ./start/vim-airline/doc" -c q
