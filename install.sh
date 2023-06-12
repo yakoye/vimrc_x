@@ -14,4 +14,6 @@ fi
 
 cp ./vimrc-ex ~/.vimrc
 cp -r .vim ~
+[ -e ~/.vim ] && echo ".vim copied Finish."
+[ -e ~/.vimrc ] && echo ".vimrc copied Finish."
 
