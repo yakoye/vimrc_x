@@ -25,7 +25,7 @@ which greatly enhances the loading speed.
 ```
 mv ~/.vimrc ~/.vimrc.old
 mv ~/.vim ~/.vim.old
-cp -r .vim ~
+cp -r ./vim ~/.vim
 cp vimrc-ex ~/.vimrc
 ```
 

@@ -13,7 +13,7 @@ if [ -e ~/.vim ] || [ -e ~/.vimrc ]; then
 fi
 
 cp ./vimrc-ex ~/.vimrc
-cp -r .vim ~
+cp -r ./vim ~/.vim
 [ -e ~/.vim ] && echo ".vim copied Finish."
 [ -e ~/.vimrc ] && echo ".vimrc copied Finish."
 
