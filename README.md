@@ -16,18 +16,12 @@ The main highlight of this configuration is the incorporation of Vim's Timer fun
 which greatly enhances the loading speed.
 
 # Install
-
-### method 1:
-`./install.sh`
-
-
-### method 2:
 ```
-mv ~/.vimrc ~/.vimrc.old
-mv ~/.vim ~/.vim.old
-cp -r ./vim ~/.vim
-cp vimrc-ex ~/.vimrc
+cd vimrc_ye_cfg
+
+./install.sh
 ```
+
 
 # Requirements
 To make all the plugins work, specifically [neocomplete](https://github.com/Shougo/neocomplete.vim), you need [vim with lua](https://github.com/Shougo/neocomplete.vim#requirements).

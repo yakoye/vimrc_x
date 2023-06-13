@@ -12,8 +12,12 @@ if [ -e ~/.vim ] || [ -e ~/.vimrc ]; then
     echo "Files or folders renamed successfully."
 fi
 
-cp ./vimrc-ex ~/.vimrc
-cp -r ./vim ~/.vim
-[ -e ~/.vim ] && echo ".vim copied Finish."
-[ -e ~/.vimrc ] && echo ".vimrc copied Finish."
+curt_path=$(cd "$(dirname "$0")";pwd)
+echo $curt_path
+
+ln -snf $curt_path/vimrc-ex ~/.vimrc
+ln -snf $curt_path/vim ~/.vim
+
+[ -e ~/.vim ] && echo "vim => ~/.vim"
+[ -e ~/.vimrc ] && echo "vimrc-ex => ~/.vimrc"
 
