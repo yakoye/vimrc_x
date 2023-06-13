@@ -1,21 +1,30 @@
 #!/bin/bash
 
-vim -u NONE -c "helptags ./opt/rainbow/doc" -c q
-vim -u NONE -c "helptags ./opt/vim-easymotion/doc" -c q
-vim -u NONE -c "helptags ./opt/neoinclude.vim/doc" -c q
-vim -u NONE -c "helptags ./opt/vim-fugitive/doc" -c q
-vim -u NONE -c "helptags ./opt/neocomplete.vim/doc" -c q
-vim -u NONE -c "helptags ./opt/syntastic/doc" -c q
-vim -u NONE -c "helptags ./opt/tagbar/doc" -c q
-vim -u NONE -c "helptags ./opt/nerdtree/doc" -c q
-vim -u NONE -c "helptags ./opt/ctrlp.vim/doc" -c q
-vim -u NONE -c "helptags ./opt/ctrlp-funky/doc" -c q
-vim -u NONE -c "helptags ./opt/auto-pairs/doc" -c q
-vim -u NONE -c "helptags ./opt/nerdcommenter/doc" -c q
-vim -u NONE -c "helptags ./opt/vim-surround/doc" -c q
-vim -u NONE -c "helptags ./opt/neosnippet/doc" -c q
-vim -u NONE -c "helptags ./opt/undotree/doc" -c q
-vim -u NONE -c "helptags ./start/LargeFile/doc" -c q
-vim -u NONE -c "helptags ./start/vim-preview/doc" -c q
-vim -u NONE -c "helptags ./start/vim-airline-themes/doc" -c q
-vim -u NONE -c "helptags ./start/vim-airline/doc" -c q
+vim -u NONE -c "./start/vim-preview/doc" -c  q
+vim -u NONE -c "./start/vim-airline/doc" -c  q
+vim -u NONE -c "./start/vim-airline-themes/doc" -c  q
+vim -u NONE -c "./start/LargeFile/doc" -c  q
+vim -u NONE -c "./opt/ctrlp.vim/doc" -c  q
+vim -u NONE -c "./opt/neoinclude.vim/doc" -c  q
+vim -u NONE -c "./opt/CCTree/doc" -c  q
+vim -u NONE -c "./opt/vim-surround/doc" -c  q
+vim -u NONE -c "./opt/vim-gutentags/doc" -c  q
+vim -u NONE -c "./opt/vim-nerdtree-tabs/doc" -c  q
+vim -u NONE -c "./opt/auto-pairs/doc" -c  q
+vim -u NONE -c "./opt/nerdtree/doc" -c  q
+vim -u NONE -c "./opt/neosnippet/doc" -c  q
+vim -u NONE -c "./opt/syntastic/doc" -c  q
+vim -u NONE -c "./opt/undotree/doc" -c  q
+vim -u NONE -c "./opt/tagbar/doc" -c  q
+vim -u NONE -c "./opt/vim-fugitive/doc" -c  q
+vim -u NONE -c "./opt/rainbow/doc" -c  q
+vim -u NONE -c "./opt/LeaderF/doc" -c  q
+vim -u NONE -c "./opt/vim-startuptime/doc" -c  q
+vim -u NONE -c "./opt/vim-easymotion/doc" -c  q
+vim -u NONE -c "./opt/vim-bufferline/doc" -c  q
+vim -u NONE -c "./opt/nerdcommenter/doc" -c  q
+vim -u NONE -c "./opt/tabular/doc" -c  q
+vim -u NONE -c "./opt/ctrlp-funky/doc" -c  q
+vim -u NONE -c "./opt/vim-multiple-cursors/doc" -c  q
+vim -u NONE -c "./opt/neocomplete.vim/doc" -c  q
+
