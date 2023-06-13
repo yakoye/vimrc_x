@@ -11,7 +11,7 @@
 "                 Refer:  spf13-vim                "
 " -------------------------------------------------"
 " 
-" Applies to vim8.x or later
+" It is better to use vim8.x or later, although vim7.x is also supported.
 " 
 " Environment {
 
