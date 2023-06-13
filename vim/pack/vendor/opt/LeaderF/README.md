@@ -1,12 +1,14 @@
 LeaderF
 =======
 
+[Yggdroot/LeaderF](https://github.com/Yggdroot/LeaderF)
+
 An efficient fuzzy finder that helps to locate files, buffers, mrus, gtags, etc. on the fly.
 
  - Written in Python.
  - Support fuzzy and regex searching.
  - Full-featured.
- - [Well-designed fuzzy matching algorithm](https://github.com/Yggdroot/testFuzzyMatch).
+ - Well-designed fuzzy matching algorithm.
  - [Extensible](https://github.com/Yggdroot/LeaderF/wiki/Extensions).
 
 Changelog
@@ -227,7 +229,7 @@ Popup Mode is to open LeaderF in a popup window(vim 8.1.1615+) or floating windo
 To enable popup mode:  
 ```vim
 let g:Lf_WindowPosition = 'popup'
-```  
+```
 or add `--popup` after each subcommand, e.g.,  
 ```
 Leaderf file --popup
@@ -355,9 +357,9 @@ If you like this software, please consider buying me a coffee.
 https://github.com/Yggdroot/SponsorMe/blob/main/README.md#donate
 (捐赠的朋友最好备注一下自己的ID）
 
-  [1]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_popup.gif
-  [2]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
-  [3]: https://github.com/gmarik/Vundle.vim
-  [4]: https://github.com/Yggdroot/LeaderF/blob/master/doc/leaderf.txt#L189-L349
-  [5]: https://github.com/junegunn/vim-plug
-  [6]: https://stackoverflow.com/questions/2817869/error-unable-to-find-vcvarsall-bat  
+[1]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_popup.gif
+[2]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
+[3]: https://github.com/gmarik/Vundle.vim
+[4]: https://github.com/Yggdroot/LeaderF/blob/master/doc/leaderf.txt#L189-L349
+[5]: https://github.com/junegunn/vim-plug
+[6]: https://stackoverflow.com/questions/2817869/error-unable-to-find-vcvarsall-bat
