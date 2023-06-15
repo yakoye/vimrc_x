@@ -1360,7 +1360,9 @@ fun! s:apply_syntax_highlightings()
   "exec 'hi cFunction guifg=DarkSlateGray3 cterm=bold  ctermfg=116'
   "exec 'hi cFunction guifg=DarkSeaGreen3 cterm=bold  ctermfg=150'
   exec 'hi cFunction guifg=#afd787 cterm=bold  ctermfg=150'
-  
+  exec 'hi cAnsiIMGFunction guifg=#5fd700 cterm=bold  ctermfg=76'
+  "exec 'hi cAnsiIMGFunction guifg=#5fafaf cterm=bold  ctermfg=73'
+
   "highlight cFunctionmy
   "exec 'syn match cFunctionmy "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2'
   "exec 'syn match cFunctionmy "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1'

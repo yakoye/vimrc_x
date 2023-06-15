@@ -184,6 +184,14 @@ syn keyword cAnsiFunction	UINTMAX_C INTMAX_C UINT64_C
 syn keyword cAnsiFunction	UINT32_C UINT16_C UINT8_C
 syn keyword cAnsiFunction	INT64_C INT32_C INT16_C INT8_C
 
+"my define keyword
+syn keyword cAnsiIMGFunction   IMG_UINT IMG_UINT8 IMG_UINT16 IMG_UINT32 IMG_UINT64
+syn keyword cAnsiIMGFunction   IMG_INT IMG_INT8 IMG_INT16 IMG_INT32 IMG_INT64
+syn keyword cAnsiIMGFunction   IMG_BYTE IMG_CHAR IMG_PBYTE IMG_PCHAR IMG_PCCHAR
+syn keyword cAnsiIMGFunction   IMG_PUINT8 IMG_PUINT16 IMG_PUINT32 IMG_PUINT64
+syn keyword cAnsiIMGFunction   IMG_FLOAT IMG_DOUBLE IMG_PFLOAT IMG_SECURE_TYPE
+syn keyword cAnsiIMGFunction   IMG_BOOL IMG_PBOOL IMG_HANDLE IMG_PID IMG_OS_CONNECTION
+
 " Common ANSI-standard Names
 syn keyword	cAnsiName	PRId8 PRIi16 PRIo32 PRIu64
 syn keyword	cAnsiName	PRId16 PRIi32 PRIo64 PRIuLEAST8
