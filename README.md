@@ -56,6 +56,48 @@ Before running the command, press ESC.
 
 
 
+# .bashr or .cshrc
+
+To facilitate the use of the cscope, ctags, and find commands, you can add the following configuration to.bashr or.cshrc
+
+after run command `source .bashrc` or`source .cshrc`
+
+为了方便使用cscope、ctags、find等命令，可以在.bashr 或 .cshrc中加入如下配置。
+
+之后再执行命令`source .bashrc`或`source .cshrc`
+
+```
+#######  .bashrc  ####### 
+
+# tag generate
+alias tgg='echo "tag generate ..."; ctags -R *; find `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -Rbq; echo "Finish."'
+# tag clean
+alias tgc='echo "tag cleaned"; rm cscope.* tags'
+
+alias grep-c='grep $1 -rn --include="*.c" --include="*.h" --include="*.hpp" --include="*.cpp" --include="*.cxx" --include="*.cc" --include="Makefile*"'
+alias grep-p='grep $1 -rn --include="*.py"'
+alias grep-g='grep $1 -rn --include="*.peg"'
+alias find-c='find . -name "*.h" -o -name "*.c"'
+
+
+
+####### .cshrc  ####### 
+# tag generate
+alias tgg 'echo "tag generate ..."; ctags -R *; find `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -Rbq; echo "Finish."'
+# tag clean
+alias tgc 'echo "tag cleaned"; rm cscope.* tags'
+
+alias grep-c 'grep $1 -rn --include="*.c" --include="*.h" --include="*.hpp" --include="*.cpp" --include="*.cxx" --include="*.cc" --include="Makefile*"'
+alias grep-p 'grep $1 -rn --include="*.py"'
+alias grep-g 'grep $1 -rn --include="*.peg"'
+alias find-c 'find . -name "*.h" -o -name "*.c"'
+
+```
+
+
+
+
+
 # Refer
 
 - [spf13/spf13-vim: The ultimate vim distribution](https://github.com/spf13/spf13-vim)
