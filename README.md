@@ -1,5 +1,7 @@
 # vimrc_ye_cfg
 
+
+
 ```
            _                                        
     __   _(_)_ __ ___  _ __ ___       _____  __     
@@ -31,6 +33,29 @@ If you are working with C language, you need to install the ctags and cscope too
 It is better to use vim8.x or later, although vim7.4 is also supported.
 
 
+
+## common Commands
+
+执行命令之前，先按“ESC”。
+
+Before running the command, press ESC.
+
+| Command                           | description描述                              | 插件                                                         |
+| --------------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| `Ctrl-E` （or `:NERDTreeToggle`） | NERD tree（开关左侧文件树）                  | [nerdtree](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdtree) |
+| `,E`   (or `:NERDTreeFind`)       | NERDTree Find（定位到文件树中位置）          | [nerdtree](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdtree) |
+| `,t`                              | open/close Tagbar (开关Tagbar函数列表等)     | [tagbar](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/tagbar) |
+| `Ctrl-P`                          | open LeaderF (or Ctrlp) (搜索文件)           | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF)、[ctrlp.vim](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/ctrlp.vim) |
+| `Ctrl-P ` ↓`Ctrl-P`               | open LeaderF Preview file (预览文件)         | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF) |
+| `Ctrl-]`                          | jump define (跳到定义位置，会自动上下分屏)   | cscope，ctags                                                |
+| `Ctrl-o`                          | jump back (跳回来)                           |                                                              |
+| `,k` （小写k）                    | Word highlighting（关键字着色（最多12个））  | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
+| `,K`  (大写K)                     | Clear every word highlight（取消关键字着色） | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
+| `,b`                              | easymotion-prev(before) (定位光标之前内容)   | [vim-easymotion](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-easymotion) |
+| `,n`                              | easymotion-next  (定位光标之后内容)          | [vim-easymotion](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-easymotion) |
+
+
+
 # Refer
 
 - [spf13/spf13-vim: The ultimate vim distribution](https://github.com/spf13/spf13-vim)
@@ -38,3 +63,9 @@ It is better to use vim8.x or later, although vim7.4 is also supported.
 - [PaperColor theme](https://github.com/NLKNguyen/papercolor-theme)
 
 - [256 Colors Cheat Sheet - Xterm, HEX, RGB, HSL](https://www.ditig.com/256-colors-cheat-sheet)
+
+
+
+## Update
+
+2023-06-16 10:38:16
