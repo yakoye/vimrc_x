@@ -34,7 +34,7 @@ It is better to use vim8.x or later, although vim7.4 is also supported.
 
 
 
-## common Commands
+# Common Commands
 
 执行命令之前，先按“ESC”。
 
