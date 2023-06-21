@@ -70,7 +70,7 @@ after run command `source .bashrc` or`source .cshrc`
 #######  .bashrc  ####### 
 
 # tag generate
-alias tgg='echo "tag generate ..."; ctags -R *; find `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -Rbq; echo "Finish."'
+alias tgg='echo "tag generate ..."; ctags -R *; find /usr/include `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -bkq -i cscope.files; echo "Finish."'
 # tag clean
 alias tgc='echo "tag cleaned"; rm cscope.* tags'
 
@@ -83,7 +83,7 @@ alias find-c='find . -name "*.h" -o -name "*.c"'
 
 ####### .cshrc  ####### 
 # tag generate
-alias tgg 'echo "tag generate ..."; ctags -R *; find `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -Rbq; echo "Finish."'
+alias tgg 'echo "tag generate ..."; ctags -R *; find /usr/include `pwd` -name "*.[ch]" -o -name "*.cpp" > cscope.files; cscope -bkq -i cscope.files; echo "Finish."'
 # tag clean
 alias tgc 'echo "tag cleaned"; rm cscope.* tags'
 

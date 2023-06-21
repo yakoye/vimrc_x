@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Date: 2023-06-12
-# Author: yepengyu
+# Author: yakoye
 
 
 today=`date +%Y%m%d_%s`
