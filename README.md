@@ -89,7 +89,7 @@ Before running the command, press ESC.
 
 ## 折叠（fold）
 
-帮助`help fold`
+帮助`:help fold`
 
 | 按键 | 说明                                            |      |
 | ---- | ----------------------------------------------- | ---- |
