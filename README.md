@@ -75,10 +75,8 @@ vim 自带用法：
 | Ctrl-x **Ctrl-D**              | 定义补全（Definition completion）                           | 'define'选项定义的正则表达式默认为“^\s*#\s*define”，将查找以“define”语法定义的宏。您可以使用`:set define?`命令，查看当前的'define'选项设置。 |
 | Ctrl-x **Ctrl-V**              | Vim命令补全（Command-line completion）                      | 将匹配Vim命令，以便在您开发Vim脚本时加速代码录入。           |
 | Ctrl-x **Ctrl-U**              | 用户自定义补全（User defined completion）                   | 将由`'completefunc'`选项指定的自定义函数来进行匹配。         |
-| Ctrl-x                         | 拼写建议补全（Spelling completion）                         | 将根据[拼写检查](https://link.zhihu.com/?target=http%3A//yyq123.github.io/learn-vim/learn-vi-24-SpellCheck.html)给出补全建议。需要打开拼写检查特性`:set spell` |
+| Ctrl-x **Ctrl-S**              | 拼写建议补全（Spelling completion）                         | 将根据[拼写检查](https://link.zhihu.com/?target=http%3A//yyq123.github.io/learn-vim/learn-vi-24-SpellCheck.html)给出补全建议。需要打开拼写检查特性`:set spell` |
 | Ctrl-x **Ctrl-O**              | 全能补全（Omni completion）                                 | 将由'omnifunc'选项指定的自定义函数来进行匹配。Vim将通过$VIMRUNTIME/autoload/{filetype}complete.vim文件来实现全能补全特性，现在支持8种语言，包括C, (X)HTML with CSS, JavaScript, PHP, Python, Ruby, SQL和XML。 |
-|                                |                                                             |                                                              |
-|                                |                                                             |                                                              |
 
 
 
