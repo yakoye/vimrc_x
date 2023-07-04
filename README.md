@@ -48,7 +48,7 @@ Before running the command, press ESC.
 | `Ctrl-p`                          | open LeaderF (or Ctrlp) (搜索文件)                           | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF)、[ctrlp.vim](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/ctrlp.vim) |
 | `Ctrl-p ` ↓`Ctrl-p`               | open LeaderF Preview file (向下选中并预览文件)               | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF) |
 | `Ctrl-]`                          | jump define (跳到定义位置，会自动上下分屏)                   | cscope，ctags                                                |
-| `Ctrl-o`                          | jump back (跳回来)                                           |                                                              |
+| `Ctrl-o` or `Ctrl-t`              | jump back (跳回来)                                           |                                                              |
 | `,k` （用小写k）                  | Word highlighting（关键字着色（最多12个））                  | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
 | `,K`  (用大写K)                   | Clear every word highlight（取消关键字着色）                 | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
 | `,b`                              | easymotion-prev(before) (定位光标之前内容，快速跳转)，向上跳↑ | [vim-easymotion](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-easymotion) |
