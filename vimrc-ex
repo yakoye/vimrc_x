@@ -466,8 +466,12 @@
     
     "<C-]> jump new split. not new buffers
     nnoremap <silent> <C-LeftMouse> :winc ]<CR>
-    "nnoremap <silent> <C-]> :winc ]<CR>        " Same as <Ctrl-w><Ctrl-]>
-    nnoremap <silent> <C-Bslash> :vert winc ]<CR>    "Same as <C-\>
+	
+	" Same as <Ctrl-w><Ctrl-]>
+    "nnoremap <silent> <C-]> :winc ]<CR>
+	
+    "Same as <C-\>
+    nnoremap <silent> <C-Bslash> :vert winc ]<CR>
 " }
 
 " ctrlp {
