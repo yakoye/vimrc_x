@@ -1,8 +1,6 @@
 LeaderF
 =======
 
-[Yggdroot/LeaderF](https://github.com/Yggdroot/LeaderF)
-
 An efficient fuzzy finder that helps to locate files, buffers, mrus, gtags, etc. on the fly.
 
  - Written in Python.
@@ -38,7 +36,7 @@ Requirements
 
  - vim7.3 or higher. Only support 7.4.1126+ after [v1.01](https://github.com/Yggdroot/LeaderF/releases/tag/v1.01).
  - Python2.7+ or Python3.1+.
- - To use the popup mode, neovim 0.42+ or vim 8.1.1615+ are required.
+ - To use the popup mode, neovim 0.5.0+ or vim 8.1.1615+ are required.
 
 Installation
 ------------
@@ -77,7 +75,8 @@ Usage
 usage: Leaderf[!] [-h] [--reverse] [--stayOpen] [--input <INPUT> | --cword]
                   [--top | --bottom | --left | --right | --belowright | --aboveleft | --fullScreen | --popup]
                   [--nameOnly | --fullPath | --fuzzy | --regexMode] [--nowrap] [--next | --previous]
-                  [--recall] [--popup-height <POPUP_HEIGHT>] [--popup-width <POPUP_WIDTH>]
+                  [--recall] [--popup-height <POPUP_HEIGHT>] [--popup-width <POPUP_WIDTH>] [--no-sort]
+                  [--case-insensitive] [--auto-preview | --no-auto-preview]
                   
                   {file,tag,function,mru,searchHistory,cmdHistory,help,line,colorscheme,gtags,
                       self,bufTag,buffer,rg,filetype,command,window,quickfix,loclist,jumps}
@@ -112,6 +111,7 @@ optional arguments:
   --no-sort             do not sort the result.
   --case-insensitive    fuzzy search case insensitively.
   --auto-preview        open preview window automatically.
+  --no-auto-preview     don't open preview window automatically.
 
 subcommands:
 
@@ -229,17 +229,11 @@ Popup Mode is to open LeaderF in a popup window(vim 8.1.1615+) or floating windo
 To enable popup mode:  
 ```vim
 let g:Lf_WindowPosition = 'popup'
-```
+```  
 or add `--popup` after each subcommand, e.g.,  
 ```
 Leaderf file --popup
 ```
-
-It's better to set
-```vim
-let g:Lf_PreviewInPopup = 1
-```
-, so that you can also preview the result in a popup window.
 
 Customization
 -------------
@@ -314,7 +308,6 @@ let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
 " popup mode
 let g:Lf_WindowPosition = 'popup'
-let g:Lf_PreviewInPopup = 1
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
 let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
 
@@ -357,9 +350,9 @@ If you like this software, please consider buying me a coffee.
 https://github.com/Yggdroot/SponsorMe/blob/main/README.md#donate
 (捐赠的朋友最好备注一下自己的ID）
 
-[1]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_popup.gif
-[2]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
-[3]: https://github.com/gmarik/Vundle.vim
-[4]: https://github.com/Yggdroot/LeaderF/blob/master/doc/leaderf.txt#L189-L349
-[5]: https://github.com/junegunn/vim-plug
-[6]: https://stackoverflow.com/questions/2817869/error-unable-to-find-vcvarsall-bat
+  [1]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_popup.gif
+  [2]: https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
+  [3]: https://github.com/gmarik/Vundle.vim
+  [4]: https://github.com/Yggdroot/LeaderF/blob/master/doc/leaderf.txt#L189-L349
+  [5]: https://github.com/junegunn/vim-plug
+  [6]: https://stackoverflow.com/questions/2817869/error-unable-to-find-vcvarsall-bat  

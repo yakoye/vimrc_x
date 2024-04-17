@@ -15,9 +15,9 @@ fi
 curt_path=$(cd "$(dirname "$0")";pwd)
 echo $curt_path
 
-ln -snf $curt_path/vimrc-ex ~/.vimrc
+ln -snf $curt_path/vimrc ~/.vimrc
 ln -snf $curt_path/vim ~/.vim
 
 [ -e ~/.vim ] && echo "vim => ~/.vim"
-[ -e ~/.vimrc ] && echo "vimrc-ex => ~/.vimrc"
+[ -e ~/.vimrc ] && echo "vimrc => ~/.vimrc"
 

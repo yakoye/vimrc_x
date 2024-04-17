@@ -1372,7 +1372,6 @@ fun! s:apply_syntax_highlightings()
   "exec 'hi cFunctionmy guifg=Cyan2 cterm=bold  ctermfg=blue'
   "exec 'hi cFunctionmy guifg=SteelBlue1 cterm=bold  ctermfg=blue'
 
-
   " CPP highlighting
   exec 'hi cppBoolean' . s:fg_green . s:ft_bold
   exec 'hi cppSTLnamespace' . s:fg_purple

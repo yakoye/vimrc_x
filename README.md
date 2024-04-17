@@ -1,25 +1,26 @@
-# vimrc_ye_cfg
+# vimrc_x
 
 
 
 ```bash
-           _                                        
-    __   _(_)_ __ ___  _ __ ___       _____  __     
-    \ \ / / | '_ ` _ \| '__/ __|____ / _ \ \/ /     
-     \ V /| | | | | | | | | (_|_____|  __/>  <      
-      \_/ |_|_| |_| |_|_|  \___|     \___/_/\_\     
+              _                                   
+       _   __(_)___ ___  __________     _  __     
+      | | / / / __ `__ \/ ___/ ___/    | |/_/     
+      | |/ / / / / / / / /  / /__     _>  <       
+      |___/_/_/ /_/ /_/_/   \___/____/_/|_|       
+                               /_____/            
                                                     
 ```
 I used to frequently use the spf13-vim toolkit, which offered a wide range of features.
 However, the spf13-vim toolkit was quite heavy and had a slow startup time. 
 This led me to the idea of optimizing and streamlining it, 
-resulting in my own customized Vim configuration: vimrc-ex. 
+resulting in my own customized Vim configuration: vimrc_x. 
 The main highlight of this configuration is the incorporation of Vim's Timer functionality, 
 which greatly enhances the loading speed.
 
 # Install
 ```
-cd vimrc_ye_cfg
+cd vimrc_x
 
 ./install.sh
 ```
@@ -42,23 +43,23 @@ Before running the command, press ESC.
 
 | Command                           | description描述                                              | 插件                                                         |
 | --------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `Ctrl-e` （or `:NERDTreeToggle`） | NERD tree（开关左侧文件树）                                  | [nerdtree](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdtree) |
-| `,e   (or `:NERDTreeFind`)        | NERDTree Find（定位到文件树中位置）                          | [nerdtree](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdtree) |
-| `,t`                              | open/close Tagbar (开关Tagbar函数列表等)                     | [tagbar](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/tagbar) |
-| `Ctrl-p`                          | open LeaderF (or Ctrlp) (搜索文件)                           | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF)、[ctrlp.vim](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/ctrlp.vim) |
-| `Ctrl-p ` ↓`Ctrl-p`               | open LeaderF Preview file (向下选中并预览文件)               | [LeaderF](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/LeaderF) |
+| `Ctrl-e` （or `:NERDTreeToggle`） | NERD tree（开关左侧文件树）                                  | [nerdtree](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdtree) |
+| `,e   (or `:NERDTreeFind`)        | NERDTree Find（定位到文件树中位置）                          | [nerdtree](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdtree) |
+| `,t`                              | open/close Tagbar (开关Tagbar函数列表等)                     | [tagbar](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/tagbar) |
+| `Ctrl-p`                          | open LeaderF (or Ctrlp) (搜索文件)                           | [LeaderF](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/LeaderF)、[ctrlp.vim](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/ctrlp.vim) |
+| `Ctrl-p ` ↓`Ctrl-p`               | open LeaderF Preview file (向下选中并预览文件)               | [LeaderF](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/LeaderF) |
 | `Ctrl-]`                          | jump define (跳到定义位置，会自动上下分屏)                   | cscope，ctags                                                |
 | `Ctrl-o` or `Ctrl-t`              | jump back (跳回来)                                           |                                                              |
-| `,k` （用小写k）                  | Word highlighting（关键字着色（最多12个））                  | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
-| `,K`  (用大写K)                   | Clear every word highlight（取消关键字着色）                 | [vim-interestingwords](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
-| `,b`                              | easymotion-prev(before) (定位光标之前内容，快速跳转)，向上跳↑ | [vim-easymotion](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-easymotion) |
-| `,n`                              | easymotion-next  (定位光标之后内容，快速跳转)，向下跳↓       | [vim-easymotion](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/vim-easymotion) |
-| `,ci`                             | 多行注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
-| `,cc`                             | 单行注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
-| `,ca`                             | 切换注释格式                                                 | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
-| `,cu`                             | 取消注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
-| `,cA`                             | 行尾注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
-| `,c空格`                          | 注释/取消注释                                                | [nerdcommenter](https://github.com/yakoye/vimrc_ye_cfg/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,k` （用小写k）                  | Word highlighting（关键字着色（最多12个））                  | [vim-interestingwords](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
+| `,K`  (用大写K)                   | Clear every word highlight（取消关键字着色）                 | [vim-interestingwords](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/vim-interestingwords) |
+| `,b`                              | easymotion-prev(before) (定位光标之前内容，快速跳转)，向上跳↑ | [vim-easymotion](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/vim-easymotion) |
+| `,n`                              | easymotion-next  (定位光标之后内容，快速跳转)，向下跳↓       | [vim-easymotion](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/vim-easymotion) |
+| `,ci`                             | 多行注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,cc`                             | 单行注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,ca`                             | 切换注释格式                                                 | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,cu`                             | 取消注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,cA`                             | 行尾注释                                                     | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
+| `,c空格`                          | 注释/取消注释                                                | [nerdcommenter](https://github.com/yakoye/vimrc_x/tree/main/vim/pack/vendor/opt/nerdcommenter) |
 
 
 
