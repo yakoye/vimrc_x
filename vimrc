@@ -875,6 +875,48 @@ endif
     nmap <leader>n <Plug>(easymotion-w)
 " }
 
+" vim-floaterm {
+    "Enable shortcut key support
+    let g:floaterm_keymap_enabled = 1
+    
+    "Set the default terminal type (e.g., bash, zsh, powershell, etc.)
+    let g:floaterm_default_term = 'bash'
+    
+    "Set the size of the floating terminal window and position
+    " Type Number (number of columns) or Float (between 0 and 1). If Float, the width is relative to &columns. Default: 0.6
+    let g:floaterm_width = 0.8
+    let g:floaterm_height = 0.3
+    "let g:floaterm_wintype = 'float'
+    let g:floaterm_position = 'center'
+    let g:floaterm_wintype = 'split'
+    let g:floaterm_position = 'belowright'
+
+    " Set the opacity of the floating terminal to 80%
+    let g:floaterm_opencmd = 'silent !kitty @ --to=unix:/tmp/mykitty new-window --cwd=current'
+    let g:floaterm_opener = 'drop'
+    "Set the terminal title
+    let g:floaterm_title = 'floaterm($1/$2)'
+    "let g:floaterm_title = 'Floating Terminal'
+
+    "Open a terminal automatically on startup
+    let g:floaterm_auto_open = 1
+    
+    "Set the terminal background transparency (0-100, 0 being fully transparent, 100 being opaque)
+    let g:floaterm_transparency = 10
+    
+    "Set the terminal font
+    let g:floaterm_font = 'Fira Code Retina'
+    
+    "Set the terminal color scheme (requires a compatible terminal emulator)
+    let g:floaterm_color_scheme = 'dracula'
+    
+    "Map a shortcut key for opening a new terminal
+    nnoremap <leader>ft :FloatermNew<CR>
+    nnoremap <silent> <F7> :FloatermToggle<CR>
+    tnoremap <silent> <F7> <C-\><C-n>:FloatermToggle<CR>
+" }
+
+
 " Automatically insert file header when creating new .c, .h, .sh, .java files   
 " 'normal G' Automatically move cursor to end of file after creating a new file
 " AutoInsertFileHeaderInformation {
@@ -1041,6 +1083,7 @@ if (v:version < 800)
         Plug 'ludovicchabant/vim-gutentags'
         Plug 'junegunn/vim-slash'
         Plug 'mileszs/ack.vim'
+        Plug 'voldikss/vim-floaterm'
     call plug#end()
 endif
 
@@ -1078,6 +1121,7 @@ if (v:version >= 800)
         packadd vim-gutentags
         packadd vim-slash   "Automatically clears search highlight when cursor is moved
         packadd ack.vim
+        packadd vim-floaterm
         "packadd vim-preview   "in start/
     endfunction
 
