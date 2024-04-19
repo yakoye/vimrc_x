@@ -159,7 +159,7 @@ alias find-c 'find . -name "*.h" -o -name "*.c"'
 
 - [256 Colors Cheat Sheet - Xterm, HEX, RGB, HSL](https://www.ditig.com/256-colors-cheat-sheet)
 
-
+- [插件帮助help](https://blog.csdn.net/BjarneCpp/article/details/80608706)
 
 ## Update
 
