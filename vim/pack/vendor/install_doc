@@ -27,4 +27,10 @@ vim -u NONE -c "helptags ./opt/tabular/doc" -c  q
 vim -u NONE -c "helptags ./opt/ctrlp-funky/doc" -c  q
 vim -u NONE -c "helptags ./opt/vim-multiple-cursors/doc" -c  q
 vim -u NONE -c "helptags ./opt/neocomplete.vim/doc" -c  q
+vim -u NONE -c "helptags ./opt/vim-gutentags/doc"
+vim -u NONE -c "helptags ./opt/ack.vim/doc"
+vim -u NONE -c "helptags ./opt/vim-floaterm/doc"
+vim -u NONE -c "helptags ./opt/vim-startify/doc"
+
+# :helptags ALL
 

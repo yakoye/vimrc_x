@@ -520,88 +520,93 @@ if (v:version < 800)
 endif
 "}
 
-if (v:version >= 800)
 " LeaderF {
-    " don't show the help in normal mode
-    let g:Lf_HideHelp = 1
-    let g:Lf_UseCache = 0
-    let g:Lf_UseVersionControlTool = 0
-    let g:Lf_IgnoreCurrentBufferName = 1
-    let g:Lf_StlColorscheme = 'Powerline' "popup  powerline  solarized  onedark one
-    let g:Lf_AutoResize = 1
-    let g:Lf_WindowHeight = 0.30
+if (v:version >= 800)
+    if isdirectory(expand("~/.vim/pack/vendor/opt/LeaderF/"))
+        " don't show the help in normal mode
+        let g:Lf_HideHelp = 1
+        let g:Lf_UseCache = 0
+        let g:Lf_UseVersionControlTool = 0
+        let g:Lf_IgnoreCurrentBufferName = 1
+        let g:Lf_StlColorscheme = 'Powerline' "popup  powerline  solarized  onedark one
+        let g:Lf_AutoResize = 1
+        let g:Lf_WindowHeight = 0.30
+        let g:Lf_MruEnableFrecency = 1
+        let g:Lf_QuickSelect = 1
 
-    " Set patterns for LeaderF to ignore specific directories and file types
-    let g:Lf_WildIgnore = {
-        \ 'dir': ['.git', '.hg', '.svn'],
-        \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class']
-        \ }
-    
-    " Configure LeaderF to ignore certain files and directories specifically for the Most Recently Used (MRU) functionality
-    let g:Lf_MruWildIgnore = {
-        \ 'dir': ['.git', '.hg', '.svn'],
-        \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class']
-        \}
-
-    " Difference from g:Lf_WildIgnore:
-    " g:Lf_WildIgnore is used for general file and directory ignoring across all LeaderF functionalities,
-    " such as file searching, whereas g:Lf_MruWildIgnore and g:Lf_MruFileExclude specifically tailor
-    " what appears in the MRU list, impacting only the MRU functionality.
-
-    " popup mode
-    let g:Lf_WindowPosition = 'popup'
-    let g:Lf_PopupColorscheme = 'onedark'
-    let g:Lf_PopupPosition = [5, 0]
-    let g:Lf_PreviewInPopup = 1
-    let g:Lf_PopupPreviewPosition = 'cursor'
-    let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
-    let g:Lf_PreviewResult = {
-            \ 'File': 0,
-            \ 'Buffer': 0,
-            \ 'Mru': 0,
-            \ 'Tag': 0,
-            \ 'BufTag': 1,
-            \ 'Function': 1,
-            \ 'Line': 0,
-            \ 'Colorscheme': 0,
-            \ 'Rg': 0,
-            \ 'Gtags': 0
+        " Set patterns for LeaderF to ignore specific directories and file types
+        let g:Lf_WildIgnore = {
+            \ 'dir': ['.git', '.hg', '.svn'],
+            \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class']
+            \ }
+        
+        " Configure LeaderF to ignore certain files and directories specifically for the Most Recently Used (MRU) functionality
+        let g:Lf_MruWildIgnore = {
+            \ 'dir': ['.git', '.hg', '.svn'],
+            \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class']
             \}
 
-    let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
-    let g:Lf_ShortcutF = '<C-p>'
-    let g:Lf_ShortcutB = '<C-b>'
-    "let g:Lf_ShortcutF = "<leader>ff"
-    
-    noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
-    noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-    noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-    noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+        " Difference from g:Lf_WildIgnore:
+        " g:Lf_WildIgnore is used for general file and directory ignoring across all LeaderF functionalities,
+        " such as file searching, whereas g:Lf_MruWildIgnore and g:Lf_MruFileExclude specifically tailor
+        " what appears in the MRU list, impacting only the MRU functionality.
 
-    noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-    noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-    " search visually selected text literally
-    xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
-    noremap go :<C-U>Leaderf! rg --recall<CR>
+        " popup mode
+        let g:Lf_WindowPosition = 'popup'
+        let g:Lf_PopupColorscheme = 'onedark'
+        let g:Lf_PopupPosition = [5, 0]
+        let g:Lf_PreviewInPopup = 1
+        let g:Lf_PopupPreviewPosition = 'cursor'
+        let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+        let g:Lf_PreviewResult = {
+                \ 'File': 0,
+                \ 'Buffer': 0,
+                \ 'Mru': 0,
+                \ 'Tag': 0,
+                \ 'BufTag': 1,
+                \ 'Function': 1,
+                \ 'Line': 0,
+                \ 'Colorscheme': 0,
+                \ 'Rg': 0,
+                \ 'Gtags': 0
+                \}
 
-    " should use `Leaderf gtags --update` first
-    let g:Lf_GtagsAutoGenerate = 0
-    let g:Lf_Gtagslabel = 'native-pygments'
-    noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-    noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-    noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-    noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-    noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
-    
-    let g:Lf_WindowPosition = 'popup'
-    let g:Lf_PreviewInPopup = 1
-    " Show icons, icons are shown by default
-    let g:Lf_ShowDevIcons = 1
-    " For GUI vim, the icon font can be specify like this, for example
-    let g:Lf_DevIconsFont = "DroidSansM Nerd Font Mono"
-    " If needs
-    set ambiwidth=double
-    
+        "let g:Lf_ShortcutF = "<leader>ff"
+        let g:Lf_ShortcutF = '<C-p>'
+        nnoremap <Leader>m :LeaderfMru<CR>
+
+        let g:Lf_ShortcutB = '<C-b>'
+        let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+        
+        noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+        noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+        noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+        noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+        noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+        noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+        " search visually selected text literally
+        xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+        noremap go :<C-U>Leaderf! rg --recall<CR>
+
+        " should use `Leaderf gtags --update` first
+        let g:Lf_GtagsAutoGenerate = 0
+        let g:Lf_Gtagslabel = 'native-pygments'
+        noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+        noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+        noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+        noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+        noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+        
+        let g:Lf_WindowPosition = 'popup'
+        let g:Lf_PreviewInPopup = 1
+        " Show icons, icons are shown by default
+        let g:Lf_ShowDevIcons = 1
+        " For GUI vim, the icon font can be specify like this, for example
+        let g:Lf_DevIconsFont = "DroidSansM Nerd Font Mono"
+        " If needs
+        set ambiwidth=double
+    endif
 endif
 " }
 
@@ -861,61 +866,103 @@ endif
     endif
 " }
 
-    " Session List {
-        set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize
-        if isdirectory(expand("~/.vim/pack/vendor/opt/sessionman.vim/"))
-            nmap <leader>sl :SessionList<CR>
-            nmap <leader>ss :SessionSave<CR>
-            nmap <leader>sc :SessionClose<CR>
-        endif
-    " }
+" Session List {
+    set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize
+    if isdirectory(expand("~/.vim/pack/vendor/opt/sessionman.vim/"))
+        nmap <leader>sl :SessionList<CR>
+        nmap <leader>ss :SessionSave<CR>
+        nmap <leader>sc :SessionClose<CR>
+    endif
+" }
 
 " easymotion {
-    nmap <leader>b <Plug>(easymotion-b)
-    nmap <leader>n <Plug>(easymotion-w)
+    if isdirectory(expand("~/.vim/pack/vendor/opt/vim-easymotion/"))
+        nmap <leader>b <Plug>(easymotion-b)
+        nmap <leader>n <Plug>(easymotion-w)
+    endif
 " }
 
 " vim-floaterm {
-    "Enable shortcut key support
-    let g:floaterm_keymap_enabled = 1
-    
-    "Set the default terminal type (e.g., bash, zsh, powershell, etc.)
-    let g:floaterm_default_term = 'bash'
-    
-    "Set the size of the floating terminal window and position
-    " Type Number (number of columns) or Float (between 0 and 1). If Float, the width is relative to &columns. Default: 0.6
-    let g:floaterm_width = 0.8
-    let g:floaterm_height = 0.3
-    "let g:floaterm_wintype = 'float'
-    let g:floaterm_position = 'center'
-    let g:floaterm_wintype = 'split'
-    let g:floaterm_position = 'belowright'
+    if isdirectory(expand("~/.vim/pack/vendor/opt/vim-floaterm/"))
+        "Enable shortcut key support
+        let g:floaterm_keymap_enabled = 1
+        
+        "Set the default terminal type (e.g., bash, zsh, powershell, etc.)
+        let g:floaterm_default_term = 'bash'
+        
+        "Set the size of the floating terminal window and position
+        " Type Number (number of columns) or Float (between 0 and 1). If Float, the width is relative to &columns. Default: 0.6
+        let g:floaterm_width = 0.8
+        let g:floaterm_height = 0.3
+        "let g:floaterm_wintype = 'float'
+        let g:floaterm_position = 'center'
+        let g:floaterm_wintype = 'split'
+        let g:floaterm_position = 'belowright'
 
-    " Set the opacity of the floating terminal to 80%
-    let g:floaterm_opencmd = 'silent !kitty @ --to=unix:/tmp/mykitty new-window --cwd=current'
-    let g:floaterm_opener = 'drop'
-    "Set the terminal title
-    let g:floaterm_title = 'floaterm($1/$2)'
-    "let g:floaterm_title = 'Floating Terminal'
+        " Set the opacity of the floating terminal to 80%
+        let g:floaterm_opencmd = 'silent !kitty @ --to=unix:/tmp/mykitty new-window --cwd=current'
+        let g:floaterm_opener = 'drop'
+        "Set the terminal title
+        let g:floaterm_title = 'floaterm($1/$2)'
+        "let g:floaterm_title = 'Floating Terminal'
 
-    "Open a terminal automatically on startup
-    let g:floaterm_auto_open = 1
-    
-    "Set the terminal background transparency (0-100, 0 being fully transparent, 100 being opaque)
-    let g:floaterm_transparency = 10
-    
-    "Set the terminal font
-    let g:floaterm_font = 'Fira Code Retina'
-    
-    "Set the terminal color scheme (requires a compatible terminal emulator)
-    let g:floaterm_color_scheme = 'dracula'
-    
-    "Map a shortcut key for opening a new terminal
-    nnoremap <leader>ft :FloatermNew<CR>
-    nnoremap <silent> <F7> :FloatermToggle<CR>
-    tnoremap <silent> <F7> <C-\><C-n>:FloatermToggle<CR>
+        "Open a terminal automatically on startup
+        let g:floaterm_auto_open = 1
+        
+        "Set the terminal background transparency (0-100, 0 being fully transparent, 100 being opaque)
+        let g:floaterm_transparency = 10
+        
+        "Set the terminal font
+        let g:floaterm_font = 'Fira Code Retina'
+        
+        "Set the terminal color scheme (requires a compatible terminal emulator)
+        let g:floaterm_color_scheme = 'dracula'
+        
+        "Map a shortcut key for opening a new terminal
+        nnoremap <leader>ft :FloatermNew<CR>
+        nnoremap <silent> <F7> :FloatermToggle<CR>
+        tnoremap <silent> <F7> <C-\><C-n>:FloatermToggle<CR>
+    endif
 " }
 
+" vim-startify {
+    if isdirectory(expand("~/.vim/pack/vendor/start/vim-startify"))
+
+        " Display the Startify interface upon Vim start if no files were specified
+        autocmd VimEnter * if !argc() | Startify | endif
+
+    "    " Set the number of most recently used files to display in the Startify list
+        let g:startify_files_number = 10
+
+    "    " Customize the Startify interface title
+    "    let g:startify_custom_header = 'echo split("Welcome to Vim", "\n")'
+
+    "    " Add bookmarks to Startify
+        let g:startify_bookmarks = [
+              \ { 'i': '~/.vimrc' },
+              \ { 'z': '~/.zshrc' }
+              \ ]
+
+    "    " Set the directory where Startify sessions are stored
+        let g:startify_session_dir = '~/.vimsessions'
+
+    "    " Automatically save the session when exiting Vim
+        let g:startify_session_persistence = 1
+
+    "    " Disable Unicode art in the Startify interface
+        let g:startify_fortune_use_unicode = 0
+
+    "    " Customize the layout of the Startify list
+    "    let g:startify_lists = [
+    "          \ { 'type': 'sessions',  'header': ['   Sessions']       },
+    "          \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+    "          \ { 'type': 'files',     'header': ['   Recent Files']   },
+    "          \ { 'type': 'dir',       'header': ['   Current Directory '. getcwd()] },
+    "          \ { 'type': 'commands',  'header': ['   Commands']       }
+    "          \ ]
+
+    endif
+" }
 
 " Automatically insert file header when creating new .c, .h, .sh, .java files   
 " 'normal G' Automatically move cursor to end of file after creating a new file
@@ -1081,9 +1128,10 @@ if (v:version < 800)
         Plug 'hari-rangarajan/CCTree'
         Plug 'dstein64/vim-startuptime'
         Plug 'ludovicchabant/vim-gutentags'
-        Plug 'junegunn/vim-slash'
+        "Plug 'junegunn/vim-slash'
         Plug 'mileszs/ack.vim'
         Plug 'voldikss/vim-floaterm'
+        Plug 'mhinz/vim-startify'
     call plug#end()
 endif
 
@@ -1119,15 +1167,16 @@ if (v:version >= 800)
         packadd CCTree
         packadd vim-startuptime
         packadd vim-gutentags
-        packadd vim-slash   "Automatically clears search highlight when cursor is moved
+        "packadd vim-slash   "Automatically clears search highlight when cursor is moved
         packadd ack.vim
         packadd vim-floaterm
+        packadd vim-startify
         "packadd vim-preview   "in start/
     endfunction
 
     noremap <Leader>pp :call PackLoadAll(1)<CR>
 
-    let Timer = timer_start(1000, 'PackLoadAll')
+    let Timer = timer_start(600, 'PackLoadAll')
     endif
 "}
 
