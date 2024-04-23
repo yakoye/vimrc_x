@@ -8,7 +8,7 @@ if [ ! -d "$trash_base" ]; then
 fi
 
 Date=$(date +%y%m%d_%H%M%S)
-trash_dir="$trash_base/.rm_$Date"
+trash_dir="$trash_base/rm_$Date"
 
 mkdir -p "$trash_dir"
 mv "$@" "$trash_dir"
