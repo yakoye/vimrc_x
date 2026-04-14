@@ -31,7 +31,7 @@ To make all the plugins work, specifically [neocomplete](https://github.com/Shou
 
 If you are working with C language, you need to install the ctags and cscope tools.
 
-It is better to use vim8.x or later, although vim7.4 is also supported.
+It is better to use vim8.x or later.
 
 
 
