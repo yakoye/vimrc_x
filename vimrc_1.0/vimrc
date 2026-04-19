@@ -8,10 +8,11 @@
 "                               /_____/            "
 "                                                  "
 "                                                  "
-"                 Name:   vimrc_x                  " 
-"                 Author: yepengyu                 "
-"                 Date:   2021-12-12               "
-"                 Refer:  spf13-vim                "
+"  Name:   vimrc_x                                 " 
+"  Author: yepengyu                                "
+"  Date:   2021-12-12                              "
+"  Update: 2025-11-8                               "
+"  Refer:  spf13-vim                               "
 " -------------------------------------------------"
 " 
 " It is better to use vim8.x or later, although vim7.x is also supported.
@@ -54,8 +55,22 @@
     set clipboard=exclude:.*    "Do not connect to X server, vim -X
 " }
 
+    "resolve Display 'ESC[?4m' Error
+    if (v:version >= 901)
+        set keyprotocol=
+        let &term=&term
+    endif
+
     filetype plugin indent on   " Automatically detect file types.
+    augroup filetypedetect
+        au! BufRead,BufNewFile defconfig set filetype=make
+        au! BufRead,BufNewFile kconfig set filetype=make
+        au! BufRead,BufNewFile .config set filetype=make
+    augroup END
+    
     syntax on                   " Syntax highlighting
+    au FileType markdown highlight link markdownError Normal
+
     scriptencoding utf-8
 
     set encoding=utf-8
@@ -64,8 +79,10 @@
     set fileencodings=ucs-bom,utf-8,chinese,taiwan,japan,korea
 
     "leader key, <leader> = ','
-    let mapleader = ','
-
+    "let mapleader = ','
+    let mapleader = ' '
+    let g:maplocalleader = ','
+    
     set background=dark         " Assume a dark background
     " Allow to trigger background
     function! ToggleBG()
@@ -77,7 +94,7 @@
             set background=dark
         endif
     endfunction
-    noremap <leader>bg :call ToggleBG()<CR>
+    noremap <leader>wg :call ToggleBG()<CR>
 
     " color {
     if isdirectory(expand("~/.vim/colors"))
@@ -95,9 +112,18 @@
         color desert
     endif
     " }
+    
+    " tokyonight-vim {
+    "set termguicolors
+    "let g:tokyonight_style = 'night' " available: night, storm
+    "let g:tokyonight_enable_italic = 1
+    "colorscheme tokyonight
+    " }
 
     if has('gui_running')
         set guioptions-=T           " Remove the toolbar
+        "set guioptions+=a           " auto copy to CLIPBOARD
+        set clipboard=unnamedplus   " 用 "+y 把内容放到 CLIPBOARD
         set lines=40                " 40 lines of text instead of 24
         set mouse=a                 " Automatically enable mouse usage
         set mousehide               " Hide the mouse cursor while typing
@@ -110,11 +136,12 @@
         endif
         "set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
     else
-        "set mouse=a
-        if &term == 'xterm' || &term == 'xterm-color' || &term == 'screen'
+        set mouse=a
+        if &term == 'xterm' || &term == 'xterm-color' || &term == 'xterm-256color' || &term == 'screen' || &term == 'screen-256color'
             set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
         endif
         "set term=builtin_ansi       " Make arrow and other keys work
+        "set termguicolors           " Enable true colors
     endif
 
     if has('cmdline_info')
@@ -131,7 +158,7 @@
     " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
     " Restore cursor to file position in previous editing session
     " To disable this, add the following to your .vimrc.before.local file:
-    "   let g:ypy_no_restore_cursor = 1
+    "let g:ypy_no_restore_cursor = 1
     if !exists('g:ypy_no_restore_cursor')
         function! ResCur()
             if line("'\"") <= line("$")
@@ -149,9 +176,11 @@
     "set autowrite                       " Automatically write a file when leaving a modified buffer
     set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
     set viewoptions=folds,options,cursor,unix,slash " Better Unix / Windows compatibility
-    set foldmethod=indent               " indent, manual, expr, marker, syntax, diff
-    set nofoldenable                    " When off, all folds are open.
-    set foldnestmax=10                  " Sets the maximum nesting of folds for the "indent" and "syntax" methods.
+    if (v:version > 704)
+        set foldmethod=manual               " indent, manual, expr, marker, syntax, diff
+        set nofoldenable                    " When off, all folds are open.
+        set foldnestmax=10                  " Sets the maximum nesting of folds for the "indent" and "syntax" methods.
+    endif
     set virtualedit=onemore             " Allow for cursor beyond last character
     set history=1000                    " Store a ton of history (default is 20)
     "set spell                           " Spell checking on
@@ -168,12 +197,12 @@
         set statusline=%<%f\                     " Filename
         set statusline+=%w%h%m%r                 " Options
         if (v:version > 704)
-            if !exists('g:override_ypy_pack/vendor/opts')
-                set statusline+=%{fugitive#statusline()} " Git Hotness
-            endif
+            "if !exists('g:override_ypy_pack/vendor/opts')
+                "set statusline+=%{fugitive#statusline()} " Git Hotness
+            "endif
         endif
-        set statusline+=\ [%{&ff}/%Y]            " Filetype
         set statusline+=\ [%{getcwd()}]          " Current dir
+        set statusline+=\ [%{&ff}/%Y]            " Filetype
         set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
     endif
 
@@ -190,7 +219,7 @@
     set wildmode=list:longest,full  " Command <Tab> completion, list matches, then longest common part, then all.
     set whichwrap=b,s,h,l,<,>,[,]   " Backspace and cursor keys wrap too
     set scrolljump=1                " Lines to scroll when cursor leaves screen
-    set scrolloff=1                 " Minimum lines to keep above and below cursor
+    set scrolloff=3                 " Minimum lines to keep above and below cursor
     set list
     "set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
     set listchars=tab:\ \   " Highlight problematic whitespace
@@ -205,14 +234,15 @@
     " n/tmp/.viminfo
     " setviminfofile=/tmp/.viminfo
     "set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,/tmp/pengyu/.viminfo
-    set viminfo='50,<50,/50,:50,h,r$TEMP:,s10
+    " ! use to SessionOpenLast, save and restore global variables
+    set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,!
 
     "au WinEnter * set cursorline nocursorcolumn  "cursorline, nocursorline,  cursorcolumn, nocursorcolumn
-    set cursorline cursorcolumn
+    "set cursorline cursorcolumn
     augroup cch
-        autocmd! cch
-        autocmd WinLeave * set nocursorline nocursorcolumn
-        autocmd WinEnter * set cursorline cursorcolumn
+        autocmd!
+        autocmd WinLeave * setlocal nocursorline nocursorcolumn
+        autocmd WinEnter * setlocal cursorline cursorcolumn
     augroup END
 
     set tabpagemax=15               " Only show 15 tabs
@@ -248,6 +278,11 @@
     " Wrapped lines goes down/up to next row, rather than next line in file.
     noremap j gj
     noremap k gk
+
+    " paste
+    nnoremap <S-Insert> "+p
+    inoremap <S-Insert> <C-R>+
+    vnoremap <S-Insert> "+p
 
     " End/Start of line motion keys act relative to row/wrap width in the
     " presence of `:set wrap`, and relative to line for `:set nowrap`.
@@ -319,25 +354,25 @@
     nnoremap Y y$
 
     " Code folding options
-    nmap <leader>f0 :set foldlevel=0<CR>
-    nmap <leader>f1 :set foldlevel=1<CR>
-    nmap <leader>f2 :set foldlevel=2<CR>
-    nmap <leader>f3 :set foldlevel=3<CR>
-    nmap <leader>f4 :set foldlevel=4<CR>
-    nmap <leader>f5 :set foldlevel=5<CR>
-    nmap <leader>f6 :set foldlevel=6<CR>
-    nmap <leader>f7 :set foldlevel=7<CR>
-    nmap <leader>f8 :set foldlevel=8<CR>
-    nmap <leader>f9 :set foldlevel=9<CR>
+    "nmap <leader>f0 :set foldlevel=0<CR>
+    "nmap <leader>f1 :set foldlevel=1<CR>
+    "nmap <leader>f2 :set foldlevel=2<CR>
+    "nmap <leader>f3 :set foldlevel=3<CR>
+    "nmap <leader>f4 :set foldlevel=4<CR>
+    "nmap <leader>f5 :set foldlevel=5<CR>
+    "nmap <leader>f6 :set foldlevel=6<CR>
+    "nmap <leader>f7 :set foldlevel=7<CR>
+    "nmap <leader>f8 :set foldlevel=8<CR>
+    "nmap <leader>f9 :set foldlevel=9<CR>
 
     " Most prefer to toggle search highlighting rather than clear the current
     " search results. To clear search highlighting rather than toggle it on
     " and off, add the following to your .vimrc.before.local file:
     let g:ypy_clear_search_highlight = 1
     if exists('g:ypy_clear_search_highlight')
-        nmap <silent> <leader>/ :nohlsearch<CR>
+        nmap <silent> <leader>* :nohlsearch<CR>
     else
-        nmap <silent> <leader>/ :set invhlsearch<CR>
+        nmap <silent> <leader>* :set invhlsearch<CR>
     endif
 
 
@@ -354,7 +389,7 @@
     vnoremap > >gv
     
     " Select Ctrl-C to copy
-    vmap <C-c> "+y
+    "vmap <C-c> "+y
 
     " Allow using the repeat operator with a visual selection (!)
     " http://stackoverflow.com/a/8064607/127816
@@ -366,17 +401,17 @@
     " Some helpers to edit mode
     " http://vimcasts.org/e/14
     cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
-    map <leader>ew :e %%
-    map <leader>es :sp %%
-    map <leader>ev :vsp %%
-    map <leader>et :tabe %%
+    map <leader>oe :e %%
+    map <leader>os :sp %%
+    map <leader>ov :vsp %%
+    map <leader>ot :tabe %%
 
     " Adjust viewports to the same size
     map <Leader>= <C-w>=
 
     " Map <Leader>ff to display all lines with keyword under cursor
     " and ask which one to jump to
-    nmap <Leader>ff [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
+    nmap <Leader>fw [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
     " Easier horizontal scrolling
     map zl zL
@@ -396,12 +431,7 @@
 
 " NerdTree {
     if isdirectory(expand("~/.vim/pack/vendor/opt/nerdtree"))
-        map <C-e> :NERDTreeToggle<CR>
-        map <leader>e :NERDTreeFind<CR>
-        nmap <leader>nt :NERDTreeFind<CR>
-
         let NERDTreeShowBookmarks=1
-        let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
         let NERDTreeChDirMode=0
         let NERDTreeQuitOnOpen=0
         let NERDTreeMouseMode=2
@@ -414,19 +444,62 @@
         let g:nerdtree_tabs_smart_startup_focus=2
         let g:nerdtree_tabs_on_new_tab=1
         let g:nerdtree_tabs_autoclose=0
+        let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$',
+                          \ '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$',
+                          \ '^cscope\.*', '^tags$']
+        
+        function! NERDTreeToggleOrFind()
+            if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+                NERDTreeToggle
+            else
+                if expand('%') != ''
+                    NERDTreeFind
+                else
+                    NERDTreeToggle
+                endif
+            endif
+        endfunction
+
+        nnoremap <leader>e :call NERDTreeToggleOrFind()<CR>
+
+        map <C-e> :NERDTreeToggle<CR>
+        "map <leader>e :NERDTreeFind<CR>
+        "nmap <leader>nt :NERDTreeFind<CR>
     endif
 " }
 
 " TagBar {
     if isdirectory(expand("~/.vim/pack/vendor/opt/tagbar/"))
+        "auto open tagbar, when vim open
         "autocmd VimEnter *Tagbar
         let g:tagbar_autofocus = 1
-        let g:tagbar_width = 40
+        let g:tagbar_width = max([25, winwidth(0) / 5])
         let g:tagbar_autoclose = 0
         let g:tagbar_sort = 0              " 0 = order by file location; 1 = order by name
         let g:tagbar_map_togglesort = "s"  " troggle sort order between name and file order
         let g:tagbar_autoshowtag = 1
-        nnoremap <silent> <leader>t :TagbarToggle<CR>
+        let g:tagbar_use_async  = 1
+        let g:tagbar_previewwin_pos = "aboveleft"
+        "let g:tagbar_autopreview = 1
+        "let g:tagbar_autoshowtag = 1
+        "set previewpopup=height:10,width:60
+        set updatetime=1000
+        
+        function! SetTagbarWidth()
+            let g:tagbar_width = max([25, winwidth(0) / 5])
+        endfunction
+        nnoremap <silent> <leader>t :call SetTagbarWidth()<CR>:TagbarToggle<CR>
+
+        "let g:timer_tagbar = -1
+        function! AutoTagbarToggle(timer)
+            silent execute 'TagbarCurrentTag'
+            "call timer_stop(g:timer_tagbar)
+        endfunction
+
+        augroup AutoTagbar
+            autocmd!
+            silent autocmd VimEnter * let g:timer_tagbar = timer_start(1000, 'AutoTagbarToggle')
+        augroup END
     endif
 "}
 
@@ -463,7 +536,11 @@
 " }
 
 " Ctags {
-    set tags=./tags;/,~/.vimtags
+    
+    "Append current directory and parent directories
+    set tags=./tags;/
+    "set tags+=~/.cache/tags/
+    set tags+=~/.vimtags
 
     " Make tags placed in .git/tags file available in all levels of a repository
     let gitroot = substitute(system('git rev-parse --show-toplevel'), '[\n\r]', '', 'g')
@@ -472,8 +549,84 @@
     endif
     
     "<C-]> jump new split. not new buffers
-    nnoremap <silent> <C-LeftMouse> :winc ]<CR>
-    nnoremap <silent> <C-Bslash> :vertical winc ]<CR>  " Same as: <Ctrl-\>
+    "nnoremap <silent> <C-LeftMouse> :winc ]<CR>
+    nnoremap <silent> <C-Bslash> :winc ]<CR>  " split  Same as: <Ctrl-\>,  Bslash = \
+    "nnoremap <silent> <C-Bslash> :vertical winc ]<CR>  " Same as: <Ctrl-\>,  Bslash = \
+" }
+
+" Gutentags {
+    " enable gtags module
+    let g:gutentags_modules = ['ctags', 'gtags_cscope']
+
+    " change focus to quickfix window after search (optional).
+    let g:gutentags_plus_switch = 1
+
+    " disable the default keymaps
+    let g:gutentags_plus_nomap = 1
+
+    "let g:gutentags_define_advanced_commands = 1
+
+    "let g:gutentags_generate_on_new = 1
+    
+    "let g:gutentags_generate_on_write = 1
+
+    " The marker files/directories for searching the project directory with gutentags. 
+    "  Recursion stops at the parent directory containing these names. Default is empty.
+    let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
+
+    " The name of the generated tags file. Default is 'tags'.
+    let g:gutentags_ctags_tagfile = '.tags'
+
+    " Place all automatically generated tags files into the ~/.cache/tags directory 
+    "  to avoid polluting the project directory.
+    let s:vim_tags = expand('~/.cache/tags')
+    let g:gutentags_cache_dir = s:vim_tags
+
+    " Check if ~/.cache/tags does not exist and create it if necessary.
+    if !isdirectory(s:vim_tags)
+       silent! call mkdir(s:vim_tags, 'p')
+    endif
+
+    " Configure ctags arguments. "
+    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+    let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+    let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+    noremap <silent> <leader>gs :GscopeFind s <C-R><C-W><cr>
+    noremap <silent> <leader>gg :GscopeFind g <C-R><C-W><cr>
+    noremap <silent> <leader>gc :GscopeFind c <C-R><C-W><cr>
+    noremap <silent> <leader>gt :GscopeFind t <C-R><C-W><cr>
+    noremap <silent> <leader>ge :GscopeFind e <C-R><C-W><cr>
+    noremap <silent> <leader>gf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+    noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+    noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
+    noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+    noremap <silent> <leader>gz :GscopeFind z <C-R><C-W><cr>
+
+    function! SetGutentagsForCurrentProject()
+        " 取 gutentags 缓存目录（可自定义）
+        let l:cache_dir = get(g:, 'gutentags_cache_dir', expand('~/.cache/tags'))
+
+        " 当前项目路径，去掉开头的 / 或 \
+        let l:project_path = substitute(getcwd(), '^[\\/]', '', '')
+
+        " 替换 / 为 -
+        let l:project_tag_base = substitute(l:project_path, '[\\/]', '-', 'g')
+
+        " 按默认命名规则拼路径
+        let l:tag_filename = l:cache_dir . '/' . l:project_tag_base . '-.tags'
+
+        " 判断存在，设置 tags
+        if filereadable(l:tag_filename)
+            execute 'set tags=' . fnameescape(l:tag_filename)
+            "echo '已切换 Gutentags tags 文件: ' . l:tag_filename
+        else
+            echohl WarningMsg
+            echo '未找到 Gutentags tags 文件: ' . l:tag_filename
+            echohl None
+        endif
+    endfunction
+    autocmd VimEnter * call SetGutentagsForCurrentProject()
 " }
 
 " ctrlp {
@@ -520,19 +673,101 @@ if (v:version < 800)
 endif
 "}
 
+" { common work paths, max index 10
+    let g:project_paths = [
+        \ '/home/yepengyu/code/opensbi/',
+        \ '/home/yepengyu/code/u-boot/',
+        \ '/home/yepengyu/code/linux/',
+        \ '/home/yepengyu/code/external/buildroot/',
+        \ '/home/yepengyu/code/',
+        \ '.',
+        \ '.',
+        \ '.',
+        \ '.',
+        \ '.'
+    \]
+
+    " Automatically switch working directory.
+    function! s:autoSwitchToProjectDir()
+        for path in g:project_paths
+            if expand('%:p') =~ substitute(path, '\~', $HOME, 'g')
+                execute 'cd' path
+                return
+            endif
+        endfor
+    endfunction
+
+    augroup AutoCD
+        autocmd!
+        autocmd BufEnter * call s:autoSwitchToProjectDir()
+    augroup END
+
+    function! ShowAllProjectDirAndSwitch()
+        for i in range(0, len(g:project_paths) - 1)
+            echom '[' . (i + 1) . ']: ' . g:project_paths[i]
+        endfor
+
+        let user_input = input('Enter number to switch: ')
+        let idx = str2nr(user_input)
+        
+        if idx >= 1 && idx <= len(g:project_paths)
+            let target_path = g:project_paths[idx - 1]
+            silent! execute 'cd ' . fnameescape(target_path)
+            "echom 'Switch to [' . idx . ']: ' . target_path
+        else
+            echom '    Invalid number!'
+        endif
+    endfunction
+    nnoremap <leader>jj :call ShowAllProjectDirAndSwitch()<CR>
+    nnoremap <leader>j1 :<C-U><C-R>=printf("cd %s ", g:project_paths[0])<CR><CR>
+    nnoremap <leader>j2 :<C-U><C-R>=printf("cd %s ", g:project_paths[1])<CR><CR>
+    nnoremap <leader>j3 :<C-U><C-R>=printf("cd %s ", g:project_paths[2])<CR><CR>
+    nnoremap <leader>j4 :<C-U><C-R>=printf("cd %s ", g:project_paths[3])<CR><CR>
+    nnoremap <leader>j5 :<C-U><C-R>=printf("cd %s ", g:project_paths[4])<CR><CR>
+    nnoremap <leader>j6 :<C-U><C-R>=printf("cd %s ", g:project_paths[5])<CR><CR>
+    nnoremap <leader>j7 :<C-U><C-R>=printf("cd %s ", g:project_paths[6])<CR><CR>
+    nnoremap <leader>j8 :<C-U><C-R>=printf("cd %s ", g:project_paths[7])<CR><CR>
+    nnoremap <leader>j9 :<C-U><C-R>=printf("cd %s ", g:project_paths[8])<CR><CR>
+    nnoremap <leader>j0 :<C-U><C-R>=printf("cd %s ", g:project_paths[9])<CR><CR>
+" }
+
+
+
 " LeaderF {
 if (v:version >= 800)
     if isdirectory(expand("~/.vim/pack/vendor/opt/LeaderF/"))
+
+        "change the position of the LeaderF window,'fullscreen', 'top', 'bottom', 'left',
+        " 'right', 'popup', default: 'bottom'
+        "let g:Lf_WindowPosition = 'popup'
+        let g:Lf_WindowHeight = 0.30  " = 30%, height of the LeaderF window, only use 'top' or 'bottom'
+        
         " don't show the help in normal mode
         let g:Lf_HideHelp = 1
         let g:Lf_UseCache = 0
         let g:Lf_UseVersionControlTool = 0
         let g:Lf_IgnoreCurrentBufferName = 1
         let g:Lf_StlColorscheme = 'Powerline' "popup  powerline  solarized  onedark one
-        let g:Lf_AutoResize = 1
-        let g:Lf_WindowHeight = 0.30
+        "let g:Lf_AutoResize = 1
         let g:Lf_MruEnableFrecency = 1
-        let g:Lf_QuickSelect = 1
+        
+        " apply only to g:Lf_WindowPosition = 'popup'
+        "let g:Lf_PopupPosition = [5, 0]
+        "let g:Lf_PopupHeight = 0.3
+        let g:Lf_PreviewCode = 1
+        let g:Lf_PreviewResult = {
+                \ 'File': 1,
+                \ 'Buffer': 1,
+                \ 'Mru': 1,
+                \ 'Tag': 1,
+                \ 'BufTag': 1,
+                \ 'Function': 1,
+                \ 'Line': 1,
+                \ 'Colorscheme': 0,
+                \ 'Rg': 1,
+                \ 'Gtags': 1
+                \}
+        
 
         " Set patterns for LeaderF to ignore specific directories and file types
         let g:Lf_WildIgnore = {
@@ -551,122 +786,507 @@ if (v:version >= 800)
         " such as file searching, whereas g:Lf_MruWildIgnore and g:Lf_MruFileExclude specifically tailor
         " what appears in the MRU list, impacting only the MRU functionality.
 
-        " popup mode
-        let g:Lf_WindowPosition = 'popup'
-        let g:Lf_PopupColorscheme = 'onedark'
-        let g:Lf_PopupPosition = [5, 0]
-        let g:Lf_PreviewInPopup = 1
-        let g:Lf_PopupPreviewPosition = 'cursor'
-        let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
-        let g:Lf_PreviewResult = {
-                \ 'File': 0,
-                \ 'Buffer': 0,
-                \ 'Mru': 0,
-                \ 'Tag': 0,
-                \ 'BufTag': 1,
-                \ 'Function': 1,
-                \ 'Line': 0,
-                \ 'Colorscheme': 0,
-                \ 'Rg': 0,
-                \ 'Gtags': 0
-                \}
-
-        "let g:Lf_ShortcutF = "<leader>ff"
-        let g:Lf_ShortcutF = '<C-p>'
-        nnoremap <Leader>m :LeaderfMru<CR>
-
-        let g:Lf_ShortcutB = '<C-b>'
-        let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
-        
-        noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
-        noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
-        noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
-        noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-
-        noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-        noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
-        " search visually selected text literally
-        xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
-        noremap go :<C-U>Leaderf! rg --recall<CR>
-
-        " should use `Leaderf gtags --update` first
-        let g:Lf_GtagsAutoGenerate = 0
-        let g:Lf_Gtagslabel = 'native-pygments'
-        noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-        noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-        noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-        noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-        noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
-        
-        let g:Lf_WindowPosition = 'popup'
-        let g:Lf_PreviewInPopup = 1
-        " Show icons, icons are shown by default
-        let g:Lf_ShowDevIcons = 1
-        " For GUI vim, the icon font can be specify like this, for example
-        let g:Lf_DevIconsFont = "DroidSansM Nerd Font Mono"
         " If needs
         set ambiwidth=double
+        "let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+
+        " LeaderfFile
+        let g:Lf_ShortcutF = '<C-P>'
+        noremap <leader>p :LeaderfFile<CR>
+        
+        noremap <C-L> :LeaderfMru<CR>
+        noremap <leader>l :LeaderfMru<CR>
+        noremap <leader>b :LeaderfBuffer<CR>
+        
+        "LeaderfBuffer
+        let g:Lf_ShortcutB = '<C-B>'
+
+        let g:Lf_CommandMap = {'<C-K>': ['<Up>'], 
+                             \ '<C-J>': ['<Down>']}
+        
+        "noremap <leader>fs :<C-U><C-R>=printf("Leaderf file %s", "")<CR><CR>
+        "" preview all Line
+        nnoremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+        "" preview all tag, such as function
+        nnoremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+        "" preview all tag, such as function, more detail
+        nnoremap <leader>ff :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+        nnoremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+        "noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+
+        let g:Lf_RgConfig = [
+            \ "--glob=!git/*",
+            \ "--glob=!cscope.*",
+            \ "--glob=!tags*",
+            \ "--hidden"
+            \ ]
+        " search word under cursor, the pattern is treated as regex, and enter
+        " normal mode directly
+        nnoremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+        
+        " search word under cursor literally in all listed buffers
+        "nnoremap <C-D> :<C-U><C-R>=printf("Leaderf! rg --all-buffers -e %s ", expand("<cword>"))<CR>
+        
+        " recall last search. If the result window is closed, reopen it.
+        nnoremap <C-F>gr :<C-U>Leaderf! rg --recall<CR>
+        
+        " search word under cursor literally only in current buffer
+        nnoremap <leader>gc :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+        
+        " search visually selected text literally
+        xnoremap <leader>gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+        
+        " should use `Leaderf gtags --update` first
+        let g:Lf_GtagsAutoGenerate = 1
+        let g:Lf_GtagsAutoUpdate = 1
+        let g:Lf_Gtagslabel = 'native-pygments'
+        " gtags update
+        nnoremap <leader>hu :Leaderf gtags --update<CR>
+        " 跳到定义
+        noremap <leader>d :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+        noremap <leader>hd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+        noremap <C-D> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+        " 查找引用
+        noremap <leader>r :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+        noremap <leader>hr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+        
+        "nnoremap <leader>dg :Leaderf gtags -d <C-R><C-W><CR> " 跳到定义
+        "nnoremap <leader>dr :Leaderf gtags -r <C-R><C-W><CR> " 查找引用
+        " 查找符号
+        noremap <leader>hs :<C-U><C-R>=printf("Leaderf! gtags -s %s --auto-jump", expand("<cword>"))<CR><CR>
+        " 字符串匹配搜索
+        noremap <leader>hg :<C-U><C-R>=printf("Leaderf! gtags -g %s --auto-jump", expand("<cword>"))<CR><CR>
+        " Recal: 重新打开上一次的 gtags 搜索结果窗口。
+        noremap <leader>ho :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+        " Next：跳转到 gtags 搜索结果中的下一个匹配位置。
+        noremap <leader>hn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+        " Previous：跳转到 gtags 搜索结果里的上一个匹配位置。
+        noremap <leader>hp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+        " 保存时会自动更新gtags索引
+        "autocmd BufWritePost * silent! !gtags --gtagslabel=pygments
+        "
+
     endif
 endif
 " }
 
+" function! LoadAirlineConfig()
 " vim-airline {
+    
+    " statusline section show:
+    " +-----------------------------------------------------------------------------+
+    " | A | B |                     C                            X | Y | Z |  [...] |
+    " +-----------------------------------------------------------------------------+
+    
+    "variable names                default contents
+    "------------------------------------------------------------------------
+    "let g:airline_section_a       (mode, crypt, paste, spell, iminsert)
+    "let g:airline_section_b       (hunks, branch)[*]
+    "let g:airline_section_c       (bufferline or filename)
+    "let g:airline_section_gutter  (readonly, csv)
+    "let g:airline_section_x       (tagbar, filetype, virtualenv)
+    "let g:airline_section_y       (fileencoding, fileformat)
+    "let g:airline_section_z       (percentage, line number, column number)
+    "let g:airline_section_error   (ycm_error_count, syntastic-err, eclim,
+    "                               languageclient_error_count)
+    "let g:airline_section_warning (ycm_warning_count, syntastic-warn,
+    "                               languageclient_warning_count, whitespace)
+    
     " Set configuration options for the statusline plugin vim-airline.
     " Use the powerline theme and optionally enable powerline symbols.
     " To use the symbols , , , , , , and .in the statusline
     " segments add the following to your .vimrc.before.local file:
-    "   let g:airline_powerline_fonts=1
+    "let g:airline_powerline_fonts=1  " Recommand install DejaVuSansM NerdFont or other NerdFont
     " If the previous symbols do not render for you then install a
     " powerline enabled font.
-    nnoremap <C-tab> :bn<CR>     " Ctrl-tab
-    nnoremap <C-s-tab> :bp<CR>   " Ctrl-Shift-tab
+    nnoremap <leader>fn :bn<CR>     " Ctrl-tab
+    nnoremap <Leader>fp :bp<CR>   " Ctrl-Shift-tab
 
     " open vertical split buffer [Number], command: [:vb N] => left|right
     " and other command: [:sb N] => up/down
     cabbrev vb vert sb
+    
 
-    let g:airline#extensions#tabline#formatter = 'unique_tail'
-    let g:airline#extensions#tabline#enabled=1
-    let g:airline#extensions#tabline#show_splits = 1
-    let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#buffer_nr_show = 1
-    let g:airline#extensions#tabline#show_tabs = 1
-    let g:airline#extensions#tabline#show_tab_nr = 1
-    let g:airline#extensions#tabline#exclude_preview = 1
-    let g:airline#extensions#tabline#tab_nr_type = 1
-    let g:airline#extensions#gutentags#enabled = 1
+    "if exists('g:loaded_airline')
+        " chose which plugin enable, such as tabline
+        "let g:airline_extensions = ['tabline']
+ 
+        let g:airline#extensions#tabline#enabled=1
+        let g:airline#extensions#tabline#formatter = 'unique_tail'
+        let g:airline#extensions#tabline#show_splits = 1
+        let g:airline#extensions#tabline#show_buffers = 1
+        let g:airline#extensions#tabline#buffer_nr_show = 1
+        let g:airline#extensions#tabline#show_tabs = 1
+        let g:airline#extensions#tabline#show_tab_nr = 0
+        let g:airline#extensions#tabline#show_tab_type = 1
+        let g:airline#extensions#tabline#tab_nr_type = 1
+        let g:airline#extensions#tabline#show_close_button = 0
+        "let g:airline#extensions#tabline#exclude_preview = 1
+        " fixes unnecessary redraw, when e.g. opening Gundo window
+        let g:airline#extensions#tabline#ignore_bufadd_pat =
+                \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree'
+        
+        " enable/disable detection of whitespace errors.
+        let g:airline#extensions#whitespace#enabled = 0
+        
+        " enable/disable tagbar integration
+        let g:airline#extensions#tagbar#enabled = 1
+        let g:airline#extensions#tagbar#flags = 'f'
 
+        let g:airline#extensions#gutentags#enabled = 1
+        
+        " show last buffer number
+        let  g:last_buffer_number  = ''
+        augroup TrackLastBuffer 
+            autocmd! 
+            autocmd  BufEnter  * let  g:last_buffer_number  = bufnr('#') 
+        augroup END
+        function! LastBufferInfo()
+            if g:last_buffer_number  > 0
+                return  g:last_buffer_number
+            else
+                return  ''
+            endif
+        endfunction
+        
+        function! SafeTagbarCurrentTag()
+            if exists('*tagbar#currenttag')
+                return tagbar#currenttag("-> %s ", "")
+            else
+                return  ''
+            endif
+        endfunction
+        "let g:airline_section_c  = '%(b%{LastBufferInfo()}^%) %t %([%M%R%H]%)' 
+        "let g:airline_section_c  = '%(b%{LastBufferInfo()}^%) ' . '%t ' . '%([%M%R%H]%) ' . '%{tagbar#currenttag("[%s] ","")}'
+        highlight HLCPrevBufNum  guifg=#af87d7 ctermfg=140
+        highlight HLCFileName    guifg=#d7ff00 ctermfg=190
+        highlight HLCFunction    guifg=#afd787 ctermfg=150
+        let g:airline_section_c  = '%#HLCPrevBufNum#' . '%(b%{LastBufferInfo()}^%) ' . 
+                                 \ '%#HLCFileName#' . '%t ' . '%([%M%R%H]%) ' . 
+                                 \ '%#HLCFunction#' . '%{SafeTagbarCurrentTag()}'
 
-    " See `:echo g:airline_theme_map` for some more choices
-    " Default in terminal vim is 'dark'
-    if isdirectory(expand("~/.vim/pack/vendor/start/vim-airline-themes/"))
-        "if !exists('g:airline_theme')
-        "    let g:airline_theme = 'solarized'
+        "let g:airline_section_c = '%n %t'
+        "let g:airline_section_z = '%4.(%p%%%) = %4.(%l%)/%4.(%L%), %-3.(%v%)'
+        let g:airline_section_z = '%3.(%p%%%) = %l/%L, %-2.(%v%)'
+        
+       " Skip buffer[num]
+       "noremap 1<leader> :buffer 1<CR>
+       "noremap 2<leader> :buffer 2<CR>
+       "noremap 3<leader> :buffer 3<CR>
+       "noremap 4<leader> :buffer 4<CR>
+       "noremap 5<leader> :buffer 5<CR>
+       "noremap 6<leader> :buffer 6<CR>
+       "noremap 7<leader> :buffer 7<CR>
+       "noremap 8<leader> :buffer 8<CR>
+       "noremap 9<leader> :buffer 9<CR>
+        
+        let max_buffer = 500
+        for i in range(1, max_buffer)
+            execute 'noremap 'i.'<leader> :buffer'.i.'<CR>'
+        endfor
+        nnoremap <C-Left> :bprev<CR>
+        nnoremap <C-Right> :bnext<CR>
+        
+        "function! DeleteCurrentSkipPrevBuffer()
+            "let l:current = bufnr('%')
+            "let l:prev = bufnr('#')
+
+            "if buflisted(l:prev)
+                "execute 'buffer ' . l:prev
+            "endif
+            "execute 'bdelete' . l:current
+        "endfunction
+        "nnoremap <Leader>fd :call DeleteCurrentSkipPrevBuffer()<CR>
+
+        function! DeleteCurrentAndGoPrevBuffer()
+            let l:current = bufnr('%')
+            let l:prev = GetPrevBuffer()
+            if l:prev > 0 && l:prev != l:current
+                execute 'buffer ' . l:prev
+            endif
+            execute 'bdelete ' . l:current
+        endfunction
+
+        function! GetPrevBuffer()
+            let buflist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+            let current = bufnr('%')
+            let idx = index(buflist, current)
+            if idx > 0
+                return buflist[idx - 1]
+            endif
+            return -1
+        endfunction
+
+        nnoremap <Leader>fd :call DeleteCurrentAndGoPrevBuffer()<CR>
+
+        " See `:echo g:airline_theme_map` for some more choices
+        " Default in terminal vim is 'dark'
+        "if isdirectory(expand("~/.vim/pack/vendor/start/vim-airline-themes/"))
+            if !exists('g:airline_theme')
+                "let g:airline_theme = 'solarized'
+                "dark theme path:.vim/pack/vendor/start/vim-airline/autoload/airline/themes/dark.vim
+                let g:airline_theme = 'dark'
+            endif
+            "if !exists('g:airline_powerline_fonts')
+                " Use the default set of separators with a few customizations
+            "    let g:airline_left_sep='›'  " Slightly fancier than '>'
+            "    let g:airline_right_sep='‹' " Slightly fancier than '<'
+            "endif
         "endif
-        "if !exists('g:airline_powerline_fonts')
-            " Use the default set of separators with a few customizations
-        "    let g:airline_left_sep='›'  " Slightly fancier than '>'
-        "    let g:airline_right_sep='‹' " Slightly fancier than '<'
-        "endif
-    endif
+    "endif
 " }
-"
-" vim-bufferline {
-    "denotes bufferline should automatically echo to the command bar
-    let g:bufferline_echo = 0
-" }
-
+" endfunction
 
 " NerdCommenter {
     if isdirectory(expand("~/.vim/pack/vendor/opt/nerdcommenter/"))
+        let g:NERDCreateDefaultMappings = 0
+        " Add spaces after comment delimiters by default
         let g:NERDAltDelims_c = 1
         let g:NERDAltDelims_cpp = 1
         let g:NERDAltDelims_h = 1
+        
+        " <C-_>, map use [ Ctrl + /]
+        nnoremap <C-_>       <Plug>NERDCommenterToggle
+        nnoremap ,c$         <Plug>NERDCommenterToEOL
+        nnoremap ,ca         <Plug>NERDCommenterAltDelims
+        nnoremap ,cA         <Plug>NERDCommenterAppend
+        nnoremap ,cb         <Plug>NERDCommenterAlignBoth
+        nnoremap ,cc         <Plug>NERDCommenterComment
+        nnoremap ,ci         <Plug>NERDCommenterInvert
+        nnoremap ,cl         <Plug>NERDCommenterAlignLeft
+        nnoremap ,cm         <Plug>NERDCommenterMinimal
+        nnoremap ,cn         <Plug>NERDCommenterNested
+        nnoremap ,cs         <Plug>NERDCommenterSexy
+        nnoremap ,cu         <Plug>NERDCommenterUncomment
+        nnoremap ,cy         <Plug>NERDCommenterYank
+        
+        vnoremap <C-_>       <Plug>NERDCommenterToggle
+        vnoremap ,c$         <Plug>NERDCommenterToEOL
+        vnoremap ,ca         <Plug>NERDCommenterAltDelims
+        vnoremap ,cA         <Plug>NERDCommenterAppend
+        vnoremap ,cb         <Plug>NERDCommenterAlignBoth
+        vnoremap ,cc         <Plug>NERDCommenterComment
+        vnoremap ,ci         <Plug>NERDCommenterInvert
+        vnoremap ,cl         <Plug>NERDCommenterAlignLeft
+        vnoremap ,cm         <Plug>NERDCommenterMinimal
+        vnoremap ,cn         <Plug>NERDCommenterNested
+        vnoremap ,cs         <Plug>NERDCommenterSexy
+        vnoremap ,cu         <Plug>NERDCommenterUncomment
+        vnoremap ,cy         <Plug>NERDCommenterYank
     endif
+" }
+
+" cscope {
+    " such as: cursor -> AA()
+    "
+    " void BB();
+    " void CC();
+    " void AA() {
+    "     BB();
+    "     CC()
+    " }
+    " void foo() {
+    "     AA()
+    " }
+    "   's'   symbol: find all references to the token KEYWORDS
+    "   'g'   global: find global definition(s) of the token KEYWORDS
+    "   'c'   calls:  find all calls to the function name KEYWORDS. ?,foo -> AA
+    "   't'   text:   find all instances of the text KEYWORDS
+    "   'e'   egrep:  egrep search for the word KEYWORDS
+    "   'f'   file:   open the filename KEYWORDS
+    "   'i'   includes: find files that include the filename KEYWORDS
+    "   'd'   called: find functions that function KEYWORDS calls.  AA -> ?, ( BB, CC )
+    
+    " use KEYWORDS under cursor
+    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+    " input KEYWORDS
+    noremap <leader>cs :<C-U><C-R>=printf("cs f s %s ", expand("<cword>"))<CR>
+    noremap <leader>cg :<C-U><C-R>=printf("cs f g %s ", expand("<cword>"))<CR>
+    noremap <leader>cc :<C-U><C-R>=printf("cs f c %s ", expand("<cword>"))<CR>
+    noremap <leader>ct :<C-U><C-R>=printf("cs f t %s ", expand("<cword>"))<CR>
+    noremap <leader>ce :<C-U><C-R>=printf("cs f e %s ", expand("<cword>"))<CR>
+    noremap <leader>cf :<C-U><C-R>=printf("cs f f %s ", expand("<cword>"))<CR>
+    noremap <leader>ci :<C-U><C-R>=printf("cs f i %s ", expand("<cword>"))<CR>
+    noremap <leader>cd :<C-U><C-R>=printf("cs f d %s ", expand("<cword>"))<CR>
+" }
+
+" ===================== auto complete ========================
+" auto chose ycm/neocomplete/deoplete/autoComplPop
+"let g:autocomplete_provider = ''
+
+"" check python version, 3.8
+"let g:py3_version_ok = 0
+"if has('python3')
+  "python3 << EOF
+"import sys
+"if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+    "import vim
+    "vim.command('let g:py3_version_ok = 1')
+"EOF
+"endif
+"" 这时 g:py3_version_ok 等于1表示可用，0表示不可用
+
+"" packadd YouCompleteMe or neoCompletei
+"if (v:version >= 901 
+        "\ && has( 'patch0016' )
+        "\ && has( 'timers' )
+        "\ && has( 'python3_compiled' )
+        "\ && has( 'python3' )
+        "\ && g:py3_version_ok )
+    "let g:autocomplete_provider = 'ycm'
+"elseif has('python3') && g:py3_version_ok
+    "let g:autocomplete_provider = 'deoplete'
+"elseif has('lua')
+    "let g:autocomplete_provider = 'neocomplete'
+"else
+    "let g:autocomplete_provider = 'autoComplPop'
+"endif
+
+
+"function! GetLinuxDistro()
+    "if filereadable('/etc/os-release')
+        "let l:lines = readfile('/etc/os-release')
+        "for l:line in l:lines
+            "if l:line =~ '^ID='
+                "let l:distro = substitute(line, '^ID=', '', 'g')
+                "let l:distro= substitute(distro, '"', '', 'g')  "remove \"centos\", \"\"
+                "return l:distro
+            "endif
+        "endfor
+    "endif
+    "return ''
+"endfunction
+
+""let distro = GetLinuxDistro()
+""if distro == 'ubuntu'
+    ""let g:ypy_load_youcompleteme = 1
+    ""unlet! g:ypy_load_neocomplete
+""elseif distro == 'centos'
+    ""let g:ypy_load_neocomplete = 1
+    ""unlet! g:ypy_load_youcompleteme
+""else
+    ""echo distro "Running on a different Linux distribution"
+""endif
+
+let g:autocomplete_provider = ''
+if system('hostname -s') =~ 'u22042'
+    let g:autocomplete_provider = 'ycm'
+elseif system('hostname -s') =~ 'anta-remotedesk02'
+    "let g:autocomplete_provider = 'ycm'
+    "let g:autocomplete_provider = 'deoplete'
+    "let g:autocomplete_provider = 'neocomplete'
+    "let g:autocomplete_provider = 'autoComplPop'
+else
+
+endif
+
+" YouCompleteMe {
+if g:autocomplete_provider ==# 'ycm'
+    if isdirectory(expand("~/.vim/pack/vendor/opt/YouCompleteMe"))
+        let g:acp_enableAtStartup = 0
+        
+        " close error show
+        let g:ycm_show_diagnostics_ui = 0
+
+        " Disable caching of matches, regenerate matches each time
+        let g:ycm_cache_omnifunc=0
+	
+        " Enable syntax keyword completion
+        let g:ycm_seed_identifiers_with_syntax=1
+
+        " enable completion from tags
+        let g:ycm_collect_identifiers_from_tags_files = 1
+        
+        " Start completion from the 2nd character
+        let g:ycm_min_num_of_chars_for_completion=2
+        
+        " Enable semantic completion
+        let g:ycm_seed_identifiers_with_syntax=1	
+        
+        " Allow completion in comment input
+        let g:ycm_complete_in_comments = 1
+        
+        " Allow completion in string input
+        let g:ycm_complete_in_strings = 1
+        
+        " collect identifiers from strings and comments
+        let g:ycm_collect_identifiers_from_comments_and_strings = 1
+
+        " Collect identifiers from tags files
+        let g:ycm_collect_identifiers_from_tags_files = 1
+        
+        " User command:
+        " :YcmCompleter GoToDefinition
+        " :YcmCompleter GoToDeclaration
+        " :YcmCompleter GoToReferences
+        " :YcmCompleter GoToImplementation
+        " :YcmCompleter GoToType
+
+        " Disable YCM for the following file formats
+        let g:ycm_filetype_blacklist = {
+              \ 'tagbar' : 1,
+              \ 'nerdtree' : 1,
+              \}
+
+        nmap <leader>yw <Plug>(YCMFindSymbolInWorkspace)
+        nmap <leader>yd <Plug>(YCMFindSymbolInDocument)
+        
+        " Default key: 
+        " <C-y>, gycm_key_list_stop_completion
+        " <C-Space>, g:ycm_key_invoke_completion
+        let g:ycm_key_list_stop_completion = ['<C-y>', '<Enter>']
+        "inoremap <expr> <CR>    pumvisible() ? "\<C-y>" : "\<CR>"
+
+        let g:ycm_key_detailed_diagnostics = '<leader>yh'
+        let g:ycm_show_detailed_diag_in_popup = 1
+
+        " remap Ultisnips for compatibility for YCM
+        "let g:UltiSnipsExpandTrigger = '<C-j>'
+        "let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+        "let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
+
+        " Enable omni completion.
+        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+        autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+        autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+        autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+        " Haskell post write lint and check with ghcmod
+        " $ `cabal install ghcmod` if missing and ensure
+        " ~/.cabal/bin is in your $PATH.
+        if !executable("ghcmod")
+            autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+        endif
+
+        " For snippet_complete marker.
+        if !exists("g:ypy_no_conceal")
+            if has('conceal')
+                set conceallevel=2 concealcursor=i
+            endif
+        endif
+
+        " Disable the neosnippet preview candidate window
+        " When enabled, there can be too much visual noise
+        " especially when splits are used.
+        set completeopt-=preview
+    endif
+endif
 " }
 
 
 " neocomplete {
+if g:autocomplete_provider ==# 'neocomplete'
     if isdirectory(expand("~/.vim/pack/vendor/opt/neocomplete.vim/"))
         let g:acp_enableAtStartup = 0
         let g:neocomplete#enable_at_startup = 1
@@ -674,6 +1294,7 @@ endif
         let g:neocomplete#enable_auto_delimiter = 1
         let g:neocomplete#max_list = 15
         let g:neocomplete#force_overwrite_completefunc = 1
+        let g:neocomplete#auto_completion_start_length = 1
 
 
         " Define dictionary.
@@ -689,6 +1310,8 @@ endif
         endif
         let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
+        "let g:ypy_no_neosnippet_expand = 1
+        let g:ypy_noninvasive_completion = 1
         " Plugin key-mappings {
             " These two lines conflict with the default digraph mapping of <C-K>
             if !exists('g:ypy_no_neosnippet_expand')
@@ -700,7 +1323,15 @@ endif
                 " <ESC> takes you out of insert mode
                 inoremap <expr> <Esc>   pumvisible() ? "\<C-y>\<Esc>" : "\<Esc>"
                 " <CR> accepts first, then sends the <CR>
-                inoremap <expr> <CR>    pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
+                inoremap <expr> <CR>    pumvisible() ? "\<C-y>" : "\<CR>"
+                "inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+                "function! s:my_cr_function()
+                  "return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+                  " For no inserting <CR> key.
+                  "return pumvisible() ? "\<C-y>" : "\<CR>"
+                "endfunction
+                " <Tab>
+                "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
                 " <Down> and <Up> cycle like <Tab> and <S-Tab>
                 inoremap <expr> <Down>  pumvisible() ? "\<C-n>" : "\<Down>"
                 inoremap <expr> <Up>    pumvisible() ? "\<C-p>" : "\<Up>"
@@ -717,7 +1348,7 @@ endif
 
                 inoremap <expr><C-g> neocomplete#undo_completion()
                 inoremap <expr><C-l> neocomplete#complete_common_string()
-                "inoremap <expr><CR> neocomplete#complete_common_string()
+                inoremap <expr><CR> neocomplete#complete_common_string_abbr()
 
                 " <CR>: close popup
                 " <s-CR>: close popup and save indent.
@@ -728,7 +1359,7 @@ endif
                 function! CleverCr()
                     if pumvisible()
                         if neosnippet#expandable()
-                            let exp = "\<Plug>(neosnippet_expand) <C-k>"
+                            let exp = "\<Plug>(neosnippet_expand)"
                             return exp . neocomplete#smart_close_popup()
                         else
                             return neocomplete#smart_close_popup()
@@ -771,33 +1402,146 @@ endif
 
             imap <expr> <Tab> CleverTab()
         " }
-
+        
+        " Enable omni completion.
+        autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+        autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+        autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+        autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+        autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+        
         " Enable heavy omni completion.
         if !exists('g:neocomplete#sources#omni#input_patterns')
             let g:neocomplete#sources#omni#input_patterns = {}
         endif
-        "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-        let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-        let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-        let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+        " Avoid triggering omni completion here to prevent Vim from freezing, 
+        " especially when typing member variables in C, e.g.,
+        "    struct->member
+        "    struct.member
+        "let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+        "let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
         "let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+        "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+        "let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    endif
+endif
+" }
+
+" deoplete {
+    if g:autocomplete_provider ==# 'deoplete'
+    "let g:deoplete#enable_at_startup = 1
     endif
 " }
+
+" autoComplPop {
+    if g:autocomplete_provider ==# 'autoComplPop'
+
+    endif
+" }
+
+" ultisnips {
+    " Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+    " - https://github.com/Valloric/YouCompleteMe
+    " - https://github.com/nvim-lua/completion-nvim
+    let g:UltiSnipsExpandTrigger="<S-tab>"
+    "let g:UltiSnipsJumpForwardTrigger="<c-b>"
+    "let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+    " If you want :UltiSnipsEdit to split your window.
+    "let g:UltiSnipsEditSplit="vertical"  
+" }
+
+
+" 256 (Xterm) colors and HEX    
+" Term 256bit color see:
+" open ~/.vim/pack/vendor/opt/vim-interestingwords/Xterm_256color_chart.svg
+"   use chrome or firefox open
+" or open URL: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
+"  
+"     |    0        1        2        3        4        5        6        7        8        9
+"  ---|-----------------------------------------------------------------------------------------  
+"  00 |   000,     001,     002,     003,     004,     005,     006,     007,     008,     009, 
+"  00 | #000000, #800000, #008000, #808000, #000080, #800080, #008080, #c0c0c0, #808080, #ff0000, 
+"  01 |   010,     011,     012,     013,     014,     015,     
+"  01 | #00ff00, #ffff00, #0000ff, #ff00ff, #00ffff, #ffffff, 
+"  02 |   016,     017,     018,     019,     020,     021,     022,     023,     024,     025, 
+"  02 | #000000, #00005f, #000087, #0000af, #0000d7, #0000ff, #005f00, #005f5f, #005f87, #005faf, 
+"  03 |   026,     027,     028,     029,     030,     031,     032,     033,     034,     035, 
+"  03 | #005fd7, #005fff, #008700, #00875f, #008787, #0087af, #0087d7, #0087ff, #00af00, #00af5f, 
+"  04 |   036,     037,     038,     039,     040,     041,     042,     043,     044,     045, 
+"  04 | #00af87, #00afaf, #00afd7, #00afff, #00d700, #00d75f, #00d787, #00d7af, #00d7d7, #00d7ff, 
+"  05 |   046,     047,     048,     049,     050,     051,     052,     053,     054,     055, 
+"  05 | #00ff00, #00ff5f, #00ff87, #00ffaf, #00ffd7, #00ffff, #5f0000, #5f005f, #5f0087, #5f00af, 
+"  06 |   056,     057,     058,     059,     060,     061,     062,     063,     064,     065, 
+"  06 | #5f00d7, #5f00ff, #5f5f00, #5f5f5f, #5f5f87, #5f5faf, #5f5fd7, #5f5fff, #5f8700, #5f875f, 
+"  07 |   066,     067,     068,     069,     070,     071,     072,     073,     074,     075, 
+"  07 | #5f8787, #5f87af, #5f87d7, #5f87ff, #5faf00, #5faf5f, #5faf87, #5fafaf, #5fafd7, #5fafff, 
+"  08 |   076,     077,     078,     079,     080,     081,     082,     083,     084,     085, 
+"  08 | #5fd700, #5fd75f, #5fd787, #5fd7af, #5fd7d7, #5fd7ff, #5fff00, #5fff5f, #5fff87, #5fffaf, 
+"  09 |   086,     087,     088,     089,     090,     091,     092,     093,     094,     095, 
+"  09 | #5fffd7, #5fffff, #870000, #87005f, #870087, #8700af, #8700d7, #8700ff, #875f00, #875f5f, 
+"  10 |   096,     097,     098,     099,     100,     101,     102,     103,     104,     105, 
+"  10 | #875f87, #875faf, #875fd7, #875fff, #878700, #87875f, #878787, #8787af, #8787d7, #8787ff, 
+"  11 |   106,     107,     108,     109,     110,     111,     112,     113,     114,     115, 
+"  11 | #87af00, #87af5f, #87af87, #87afaf, #87afd7, #87afff, #87d700, #87d75f, #87d787, #87d7af, 
+"  12 |   116,     117,     118,     119,     120,     121,     122,     123,     124,     125, 
+"  12 | #87d7d7, #87d7ff, #87ff00, #87ff5f, #87ff87, #87ffaf, #87ffd7, #87ffff, #af0000, #af005f, 
+"  13 |   126,     127,     128,     129,     130,     131,     132,     133,     134,     135, 
+"  13 | #af0087, #af00af, #af00d7, #af00ff, #af5f00, #af5f5f, #af5f87, #af5faf, #af5fd7, #af5fff, 
+"  14 |   136,     137,     138,     139,     140,     141,     142,     143,     144,     145, 
+"  14 | #af8700, #af875f, #af8787, #af87af, #af87d7, #af87ff, #afaf00, #afaf5f, #afaf87, #afafaf, 
+"  15 |   146,     147,     148,     149,     150,     151,     152,     153,     154,     155, 
+"  15 | #afafd7, #afafff, #afd700, #afd75f, #afd787, #afd7af, #afd7d7, #afd7ff, #afff00, #afff5f, 
+"  16 |   156,     157,     158,     159,     160,     161,     162,     163,     164,     165, 
+"  16 | #afff87, #afffaf, #afffd7, #afffff, #d70000, #d7005f, #d70087, #d700af, #d700d7, #d700ff, 
+"  17 |   166,     167,     168,     169,     170,     171,     172,     173,     174,     175, 
+"  17 | #d75f00, #d75f5f, #d75f87, #d75faf, #d75fd7, #d75fff, #d78700, #d7875f, #d78787, #d787af, 
+"  18 |   176,     177,     178,     179,     180,     181,     182,     183,     184,     185, 
+"  18 | #d787d7, #d787ff, #d7af00, #d7af5f, #d7af87, #d7afaf, #d7afd7, #d7afff, #d7d700, #d7d75f, 
+"  19 |   186,     187,     188,     189,     190,     191,     192,     193,     194,     195, 
+"  19 | #d7d787, #d7d7af, #d7d7d7, #d7d7ff, #d7ff00, #d7ff5f, #d7ff87, #d7ffaf, #d7ffd7, #d7ffff, 
+"  20 |   196,     197,     198,     199,     200,     201,     202,     203,     204,     205, 
+"  20 | #ff0000, #ff005f, #ff0087, #ff00af, #ff00d7, #ff00ff, #ff5f00, #ff5f5f, #ff5f87, #ff5faf, 
+"  21 |   206,     207,     208,     209,     210,     211,     212,     213,     214,     215, 
+"  21 | #ff5fd7, #ff5fff, #ff8700, #ff875f, #ff8787, #ff87af, #ff87d7, #ff87ff, #ffaf00, #ffaf5f, 
+"  22 |   216,     217,     218,     219,     220,     221,     222,     223,     224,     225, 
+"  22 | #ffaf87, #ffafaf, #ffafd7, #ffafff, #ffd700, #ffd75f, #ffd787, #ffd7af, #ffd7d7, #ffd7ff, 
+"  23 |   226,     227,     228,     229,     230,     231,     232,     233,     234,     235, 
+"  23 | #ffff00, #ffff5f, #ffff87, #ffffaf, #ffffd7, #ffffff, #080808, #121212, #1c1c1c, #262626, 
+"  24 |   236,     237,     238,     239,     240,     241,     242,     243,     244,     245, 
+"  24 | #303030, #3a3a3a, #444444, #4e4e4e, #585858, #626262, #6c6c6c, #767676, #808080, #8a8a8a, 
+"  25 |   246,     247,     248,     249,     250,     251,     252,     253,     254,     255, 
+"  25 | #949494, #9e9e9e, #a8a8a8, #b2b2b2, #bcbcbc, #c6c6c6, #d0d0d0, #dadada, #e4e4e4, #eeeeee, 
 
 " vim-interestingwords {
     if isdirectory(expand("~/.vim/pack/vendor/opt/vim-interestingwords/"))
-        " max support words number is 12.
-        let g:interestingWordsGUIColors = ['#8CCBEA', '#A4E57E', '#FFDB72', '#FF7272', '#FFB3FF', '#9999FF', '#B5F5EC', '#FFFDD0', '#BAE637', '#D0BFFF', '#50E3C2', '#FCC419']
-        " Term 256bit color see:
-        " open ~/.vim/pack/vendor/opt/vim-interestingwords/Xterm_256color_chart.svg
-        "   use chrome or firefox open
-        " or open URL: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
-        let g:interestingWordsTermColors = ['154', '121', '211', '137', '214', '222', '051', '063', '022', '226', '199', '033']
-        let g:interestingWordsRandomiseColors = 1 
+
+        " use Keymap => <leader>k ColorWords , <leader>K unColorWords
+        
+        let g:interestingWordsRandomiseColors = 1
+
+        " max support words number is 24.
+        
+        "let g:interestingWordsGUIColors = ['#8CCBEA', '#A4E57E', '#FFDB72', '#FF7272', 
+                                          \ '#FFB3FF', '#9999FF', '#B5F5EC', '#FFFDD0', 
+                                          \ '#BAE637', '#D0BFFF', '#50E3C2', '#FCC419']
+        
+        " [TermColors] and [GUIColors] are not directly one-to-one correspondences.
+        let g:interestingWordsGUIColors  = ['#005fff', '#008700', '#00afaf', '#00d7ff', '#00ffff', 
+                                          \ '#5f5fff', '#5fafaf', '#5fffd7', '#875fd7', '#87afd7', 
+                                          \ '#87ffaf', '#af5fff', '#af875f', '#afafff', '#afff00', 
+                                          \ '#d75fff', '#d7d75f', '#ff00af', '#ff5faf', '#ff875f', 
+                                          \ '#ff87af', '#ffaf00', '#ffd787', '#ffff00']
+        let g:interestingWordsTermColors = ['027',     '028',     '037',     '045',     '051',
+                                          \ '063',     '073',     '086',     '098',     '110',     
+                                          \ '121',     '135',     '137',     '147',     '154',
+                                          \ '171',     '185',     '199',     '205',     '209',     
+                                          \ '211',     '214',     '222',     '226']   
+
     endif
 " }
 
-" syntastic
+" syntastic {
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
@@ -805,12 +1549,12 @@ endif
     let g:syntastic_enable_signs = 1
     let g:syntastic_error_symbol='✗'
     let g:syntastic_warning_symbol='►'    
-    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_open = 0
     "let g:syntastic_auto_jump = 1
     let g:syntastic_check_on_wq = 0
     let g:syntastic_enable_highlighting=1
     
-    let g:syntastic_always_populate_loc_list = 0
+    let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 0
     let g:syntastic_loc_list_height = 5
 
@@ -818,49 +1562,124 @@ endif
     let g:syntastic_cpp_checkers = ['gcc']
     let g:syntastic_cpp_compiler = 'gcc'
     let g:syntastic_cpp_compiler_options = '-std=c++11'
+" }
 
+" ale {
+    " Asynchronous syntax checking
+    let g:ale_enabled = 0
+    let g:ale_set_highlights = 0
+    
+    " Customize error and warning icons
+    let g:ale_sign_error = '✗'
+    let g:ale_sign_warning = '⚠'
+    "let g:ale_sign_error = '>>'
+    "let g:ale_sign_warning = '--'
 
+    " Integrate ALE into Vim's built-in status line
+    let g:ale_statusline_format = ['✗ %d', '⚠ %d', '✔ OK']
+
+    " Set this. Airline will handle the rest.
+    let g:airline#extensions#ale#enabled = 1
+    
+    " Display linter name, error, or warning information
+    "let g:ale_echo_msg_error_str = 'E'
+    "let g:ale_echo_msg_warning_str = 'W'
+    let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+
+    " Do not check syntax when opening a file
+    let g:ale_lint_on_enter = 0
+
+    " Display warnings when saving a file
+    let g:ale_lint_on_text_changed = 'never'
+    let g:ale_lint_on_enter = 0
+
+    " In normal mode, use 'sp' to go to the previous error or warning, 'sn' to go to the next error or warning
+    nmap sp <Plug>(ale_previous_wrap)
+    nmap sn <Plug>(ale_next_wrap)
+
+    " Use <Leader>s to toggle syntax checking on or off
+    "nmap <Leader>s :ALEToggle<CR>
+
+    " Use <Leader>d to view detailed information about errors or warnings
+    "nmap <Leader>d :ALEDetail<CR>
+
+    "let g:ale_c_build_dir = '/home/yepengyu/antcode/HPU_software/scp/external/buildroot/output/build'
+    " Use clangcheck/cc/clangd for C and C++ syntax checking and pylint for Python syntax checking
+    let g:ale_linters = {
+    \   'c': ['clangcheck', 'cc', 'clangd'],
+    \   'c++': ['clangcheck', 'gcc', 'clangd'],
+    \   'python': ['pylint'],
+    \   'csh': ['shell'],
+    \   'sh': ['shell'],
+    \}
 " }
 
 " Rainbow {
     if isdirectory(expand("~/.vim/pack/vendor/opt/rainbow/"))
         let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+        let g:rainbow_conf = {
+        \   'guifgs': ['#FF5555', '#50FA7B', '#BD93F9', '#F1FA8C', '#FF79C6', '#8BE9FD'],
+        \   'ctermfgs': ['203', '34', '135', '228', '205', '81'],
+        \	'guis': [''],
+        \	'cterms': [''],
+        \	'operators': '_,_',
+        \	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+        \	'separately': {
+        \		'*': {},
+        \		'markdown': {
+        \			'parentheses_options': 'containedin=markdownCode contained',
+        \		},
+        \		'vim': {
+        \			'parentheses_options': 'containedin=vimFuncBody',
+        \		},
+        \		'perl': {
+        \			'syn_name_prefix': 'perlBlockFoldRainbow',
+        \		},
+        \		'stylus': {
+        \			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
+        \		},
+        \		'css': 0,
+        \		'nerdtree': 0,
+        \	}
+        \}
+        nnoremap <leader>i :RainbowToggle<CR>
+        call timer_start(210, {tid -> execute('RainbowToggle')})
     endif
 "}
 
 " Fugitive {
     if isdirectory(expand("~/.vim/pack/vendor/opt/vim-fugitive/"))
-        nnoremap <silent> <leader>gs :Git status<CR>
-        nnoremap <silent> <leader>gd :Git diff<CR>
-        nnoremap <silent> <leader>gc :Git commit<CR>
-        nnoremap <silent> <leader>gb :Git blame<CR>
-        nnoremap <silent> <leader>gl :Git log<CR>
-        nnoremap <silent> <leader>gp :Git push<CR>
-        nnoremap <silent> <leader>gr :Git read<CR>
-        nnoremap <silent> <leader>gw :Git write<CR>
-        nnoremap <silent> <leader>ge :Git edit<CR>
+        nnoremap <silent> <leader>Gs :Git status<CR>
+        nnoremap <silent> <leader>Gd :Git diff<CR>
+        nnoremap <silent> <leader>Gc :Git commit<CR>
+        nnoremap <silent> <leader>Gb :Git blame<CR>
+        nnoremap <silent> <leader>Gl :Git log<CR>
+        nnoremap <silent> <leader>Gp :Git push<CR>
+        nnoremap <silent> <leader>Gr :Git read<CR>
+        nnoremap <silent> <leader>Gw :Git write<CR>
+        nnoremap <silent> <leader>Ge :Git edit<CR>
         " Mnemonic _i_nteractive
-        nnoremap <silent> <leader>gi :Git add -p %<CR>
-        nnoremap <silent> <leader>gg :SignifyToggle<CR>
+        nnoremap <silent> <leader>Gi :Git add -p %<CR>
+        nnoremap <silent> <leader>Gg :SignifyToggle<CR>
     endif
 "}
 
 " Tabularize {
     if isdirectory(expand("~/.vim/pack/vendor/opt/tabular/"))
-        nmap <Leader>a& :Tabularize /&<CR>
-        vmap <Leader>a& :Tabularize /&<CR>
-        nmap <Leader>a= :Tabularize /^[^=]*\zs=<CR>
-        vmap <Leader>a= :Tabularize /^[^=]*\zs=<CR>
-        nmap <Leader>a=> :Tabularize /=><CR>
-        vmap <Leader>a=> :Tabularize /=><CR>
-        nmap <Leader>a: :Tabularize /:<CR>
-        vmap <Leader>a: :Tabularize /:<CR>
-        nmap <Leader>a:: :Tabularize /:\zs<CR>
-        vmap <Leader>a:: :Tabularize /:\zs<CR>
-        nmap <Leader>a, :Tabularize /,<CR>
-        vmap <Leader>a, :Tabularize /,<CR>
-        nmap <Leader>a,, :Tabularize /,\zs<CR>
-        vmap <Leader>a,, :Tabularize /,\zs<CR>
+        nmap <Leader>a&     :Tabularize /&<CR>
+        vmap <Leader>a&     :Tabularize /&<CR>
+        nmap <Leader>a=     :Tabularize /^[^=]*\zs=<CR>
+        vmap <Leader>a=     :Tabularize /^[^=]*\zs=<CR>
+        nmap <Leader>a=>    :Tabularize /=><CR>
+        vmap <Leader>a=>    :Tabularize /=><CR>
+        nmap <Leader>a:     :Tabularize /:<CR>
+        vmap <Leader>a:     :Tabularize /:<CR>
+        nmap <Leader>a::    :Tabularize /:\zs<CR>
+        vmap <Leader>a::    :Tabularize /:\zs<CR>
+        nmap <Leader>a,     :Tabularize /,<CR>
+        vmap <Leader>a,     :Tabularize /,<CR>
+        nmap <Leader>a,,    :Tabularize /,\zs<CR>
+        vmap <Leader>a,,    :Tabularize /,\zs<CR>
         nmap <Leader>a<Bar> :Tabularize /<Bar><CR>
         vmap <Leader>a<Bar> :Tabularize /<Bar><CR>
     endif
@@ -870,17 +1689,44 @@ endif
     set sessionoptions=blank,buffers,curdir,folds,tabpages,winsize
     if isdirectory(expand("~/.vim/pack/vendor/opt/sessionman.vim/"))
         nmap <leader>sl :SessionList<CR>
+        nmap <leader>so :SessionOpenLast<CR>
         nmap <leader>ss :SessionSave<CR>
         nmap <leader>sc :SessionClose<CR>
     endif
 " }
 
+" vim-bookmarks {
+    let g:bookmark_auto_close = 1
+    let g:bookmark_highlight_lines = 1
+    let g:bookmark_center = 1
+    "let g:bookmark_save_per_working_dir = 1
+    let g:bookmark_auto_save = 1
+    let g:bookmark_auto_save_file = expand('~/.vimbookmarks/bookmarks')
+    "let g:bookmark_location_list = 1
+    "highlight link BookmarkLine <Color>
+    " <color>:  SpellBad Search DiffChange DiffDelete, use :highlight
+    "highlight BookmarkLine ctermfg=17 ctermbg=45 guifg=#00005f guibg=#00dfff
+    highlight BookmarkLine ctermbg=23 guibg=#005f5f
+    highlight BookmarkAnnotationLine ctermbg=24 guibg=#005f87
+" }
+
 " easymotion {
     if isdirectory(expand("~/.vim/pack/vendor/opt/vim-easymotion/"))
-        nmap <leader>b <Plug>(easymotion-b)
-        nmap <leader>n <Plug>(easymotion-w)
+        " Beginning of word forward and backward
+        nmap <leader>jj <Plug>(easymotion-bd-w)
+        " Find {char} to bidirection
+        nmap <leader>jb <Plug>(easymotion-bd-f)
     endif
 " }
+
+" Ack mileszs/ack.vim {
+    let g:ackprg = 'ag --vimgrep --ignore ''cscope.*'' --ignore ''tags'''
+
+    noremap <leader>fa :<C-U><C-R>=printf("Ack! %s ", expand("<cword>"))<CR>
+    
+    " close Quickfix
+    nnoremap <Leader>fq :cclose<CR>
+"} 
 
 " vim-floaterm {
     if isdirectory(expand("~/.vim/pack/vendor/opt/vim-floaterm/"))
@@ -888,20 +1734,21 @@ endif
         let g:floaterm_keymap_enabled = 1
         
         "Set the default terminal type (e.g., bash, zsh, powershell, etc.)
-        let g:floaterm_default_term = 'bash'
+        "let g:floaterm_default_term = 'bash'
+        let g:floaterm_shell = 'bash --rcfile ~/.bashrc'
         
         "Set the size of the floating terminal window and position
         " Type Number (number of columns) or Float (between 0 and 1). If Float, the width is relative to &columns. Default: 0.6
         let g:floaterm_width = 0.8
         let g:floaterm_height = 0.3
-        "let g:floaterm_wintype = 'float'
+        let g:floaterm_wintype = 'float'
         let g:floaterm_position = 'center'
         let g:floaterm_wintype = 'split'
         let g:floaterm_position = 'belowright'
 
         " Set the opacity of the floating terminal to 80%
-        let g:floaterm_opencmd = 'silent !kitty @ --to=unix:/tmp/mykitty new-window --cwd=current'
-        let g:floaterm_opener = 'drop'
+        "let g:floaterm_opencmd = 'silent !kitty @ --to=unix:/tmp/mykitty new-window --cwd=current'
+        "let g:floaterm_opener = 'drop'
         "Set the terminal title
         let g:floaterm_title = 'floaterm($1/$2)'
         "let g:floaterm_title = 'Floating Terminal'
@@ -913,16 +1760,34 @@ endif
         let g:floaterm_transparency = 10
         
         "Set the terminal font
-        let g:floaterm_font = 'Fira Code Retina'
+        "let g:floaterm_font = 'Fira Code Retina'
         
         "Set the terminal color scheme (requires a compatible terminal emulator)
-        let g:floaterm_color_scheme = 'dracula'
+        "let g:floaterm_color_scheme = 'dracula'
         
         "Map a shortcut key for opening a new terminal
-        nnoremap <leader>ft :FloatermNew<CR>
-        nnoremap <silent> <F7> :FloatermToggle<CR>
-        tnoremap <silent> <F7> <C-\><C-n>:FloatermToggle<CR>
+        nnoremap  <silent> <leader>= :FloatermToggle<CR>
+        tnoremap  <silent> <leader>= <C-\><C-n>:FloatermToggle<CR>
+        
+        nnoremap  <silent> <leader>_ :FloatermNew<cr>
+        tnoremap  <silent> <leader>_ <C-\><C-n>:FloatermNew<CR>
+        
+        nnoremap  <silent> <leader>[ :FloatermPrev<CR>
+        tnoremap  <silent> <leader>[ <C-\><C-n>:FloatermPrev<CR>
+        nnoremap  <silent> <leader>] :FloatermNext<CR>
+        tnoremap  <silent> <leader>] <C-\><C-n>:FloatermNext<CR>
+        
+        nnoremap  <silent> <leader>\ :FloatermKill<CR>
+        tnoremap  <silent> <leader>\ <C-\><C-n>:FloatermKill<CR>
     endif
+" }
+"
+" colorizer {
+    let g:colorizer_startup = 0  " disbale colorizer at startup
+    "let g:colorizer_maxlines = 5000
+    let g:colorizer_nomap = 1    " completely not to map key
+
+    nnoremap <leader>v :ColorToggle<CR>
 " }
 
 " vim-startify {
@@ -930,38 +1795,142 @@ endif
 
         " Display the Startify interface upon Vim start if no files were specified
         autocmd VimEnter * if !argc() | Startify | endif
-
-    "    " Set the number of most recently used files to display in the Startify list
+        " map <C-/> == <C-_>, '/'='_'
+        nnoremap <leader>m :Startify<CR>
+        " Set the number of most recently used files to display in the Startify list
         let g:startify_files_number = 10
 
-    "    " Customize the Startify interface title
-    "    let g:startify_custom_header = 'echo split("Welcome to Vim", "\n")'
+        " Customize the Startify interface title
+        " let g:startify_custom_header = 'echo split("Welcome to Vim", "\n")'
 
-    "    " Add bookmarks to Startify
+        " Add bookmarks to Startify
         let g:startify_bookmarks = [
               \ { 'i': '~/.vimrc' },
               \ { 'z': '~/.zshrc' }
               \ ]
 
-    "    " Set the directory where Startify sessions are stored
+        " Set the directory where Startify sessions are stored
         let g:startify_session_dir = '~/.vimsessions'
 
-    "    " Automatically save the session when exiting Vim
+        " Automatically save the session when exiting Vim
         let g:startify_session_persistence = 1
 
-    "    " Disable Unicode art in the Startify interface
+        " Disable Unicode art in the Startify interface
         let g:startify_fortune_use_unicode = 0
-
-    "    " Customize the layout of the Startify list
-    "    let g:startify_lists = [
-    "          \ { 'type': 'sessions',  'header': ['   Sessions']       },
-    "          \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
-    "          \ { 'type': 'files',     'header': ['   Recent Files']   },
-    "          \ { 'type': 'dir',       'header': ['   Current Directory '. getcwd()] },
-    "          \ { 'type': 'commands',  'header': ['   Commands']       }
-    "          \ ]
+        
+        " Customize the layout of the Startify list
+        let g:startify_lists = [
+              \ { 'type': 'sessions',  'header': ['   Sessions']       },
+              \ { 'type': 'files',     'header': ['   Recent Files (MRU)']   },
+              \ { 'type': 'dir',       'header': ['   Current Directory (MRU): '. getcwd()] },
+              \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+              \ { 'type': 'commands',  'header': ['   Commands']       }
+              \ ]
 
     endif
+" }
+
+" indentLine {
+    let g:indentLine_enabled = 0
+    
+    let g:indentLine_char = '|'
+    "let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+    "let g:indentLine_setColors = 0
+    
+    let g:vim_json_conceal=0
+    let g:markdown_syntax_conceal=0
+" :IndentLinesToggle  "toggles lines on and off.
+" }
+
+" vim-which-key {
+    " By default timeoutlen is 1000 ms
+    set timeoutlen=500
+    let g:mapleader = "\<Space>"
+    let g:maplocalleader = ','
+    nnoremap <silent> <leader>      :<c-u>WhichKey  '<Space>'<CR>
+    vnoremap <silent> <leader>      :<c-u>WhichKeyVisual  '<Space>'<CR>
+    nnoremap <silent> <localleader> :<c-u>WhichKey  ','<CR>
+    vnoremap <silent> <localleader> :<c-u>WhichKeyVisual  ','<CR>
+
+    let g:which_key_map = {}
+    let g:which_key_map = {
+          \ 'e'  : 'Explorer (NerdTree)'         ,
+          \ 'b'  : 'List Buffer(Leaderf)'        ,
+          \ 't'  : 'Code Outline (Tagbar)'       ,
+          \ 'k'  : 'Keywords Highlight color'    ,
+          \ 'K'  : 'Keywords Clear Highlight'    ,
+          \ 'd'  : 'Jump to definition(Gtags)'   ,
+          \ 'r'  : 'Find references(Gtags)'      ,
+          \ 'q'  : 'Easier formatting'           ,
+          \ ' '  : ['LeaderfFile', 'Find file' ] ,
+          \ 'wg' : 'Switch background'           ,
+          \ }
+        
+    let g:which_key_map['a'] = {
+          \ 'name' : '+Tabularize'                 ,
+          \ }
+
+    let g:which_key_map['c'] = {
+          \ 'name' : '+cscope'                 ,
+          \ }
+    
+    let g:which_key_map['h'] = {
+          \ 'name' : '+Gtags(LeaderF)'               ,
+          \ 'u' : 'Gtags update'                     ,
+          \ 'd' : 'Jump to definition'               ,
+          \ 'r' : 'Find references'                  ,
+          \ 's' : 'Find symbol'                      ,
+          \ 'g' : 'Search string (grep)'             ,
+          \ 'o' : 'Recall last gtags search result'  ,
+          \ 'n' : 'Next'                             ,
+          \ 'p' : 'Previous'                         ,
+          \ }
+    
+    let g:which_key_map['f'] = {
+          \ 'name' : '+File/Find/Buffer'       ,
+          \ 'a' : 'Find Keyword (Ack)'         ,
+          \ 'b' : 'BufferAll (LeaderF)'        ,
+          \ 'd' : 'Delete Buffer'              ,
+          \ 'p' : 'Previous Buffer'            ,
+          \ 'n' : 'Next Buffer'                ,
+          \ 'q' : 'Quit [Quickfix List] buffer',
+          \ 'f' : 'Files (LeaderF)'                    ,
+          \ 's' : 'function (LeaderF)'                 ,
+          \ 'm' : 'mru [Most Recently Used] (LeaderF)' ,
+          \ 'l' : 'line (LeaderF)'                     ,
+          \ 't' : 'bufTag (LeaderF)'                   ,
+          \ 'c' : 'Find git Merge Conflict'            ,
+          \ 'w' : 'Find Keyword under Cursor'          ,
+          \ }
+    
+    "let g:which_key_map['g'] = {
+          "\ 'name' : '+gtags'                 ,
+          "\ }
+    
+    let g:which_key_map['j'] = {
+          \ 'name' : '+EasyMotion'                        ,
+          \ 'b'  : 'Cursor Skip Char (easymotion)'        ,
+          \ 'n'  : 'Cursor Skip Full Screen (easymotion)' ,
+          \ }
+
+    let g:which_key_map['o'] = {
+          \ 'name' : '+SplitModeEdit'       ,
+          \ 'e' : 'Edit'                    ,
+          \ 's' : 'Horizontal Split Edit'   ,
+          \ 'v' : 'Vertical Split Edit'     ,
+          \ 't' : 'New tab Edit'            ,
+          \ }
+    
+    let g:which_key_map['s'] = {
+          \ 'name' : '+Session'                 ,
+          \ }
+    
+    let g:which_key_map['y'] = {
+          \ 'name' : '+YCM'                 ,
+          \ }
+    
+    "autocmd VimEnter * call which_key#register('<Space>', "g:which_key_map")
+    call which_key#register('<Space>', "g:which_key_map")
 " }
 
 " Automatically insert file header when creating new .c, .h, .sh, .java files   
@@ -1030,15 +1999,15 @@ endif
 "swp file
 "set directory=~/.vimswap/
 
-
 " Initialize directories {
 function! InitializeDirectories()
     let parent = $HOME
     let prefix = 'vim'
     let dir_list = {
-                \ 'backup': 'backupdir',
-                \ 'views': 'viewdir',
-                \ 'swap': 'directory' }
+                \ 'backup':    'backupdir',
+                \ 'views':     'viewdir',
+                \ 'bookmarks': 'directory',
+                \ 'swap':      'directory' }
 
     if has('persistent_undo')
         let dir_list['undo'] = 'undodir'
@@ -1077,20 +2046,20 @@ call InitializeDirectories()
 
 " KeyMap
 "
-" tagbar  -------------->  [,t] (function list)
+" tagbar  -------------->  [<Space>t] (function list)
 "
 " ctrlp   -------------->  [C-p] (Ctrl-p, search file name)
 "
-" nerdcommenter  ------->  [,cc] (single line)
-"                          [,ci] (multi lines)
-"                          [,cu] (cancel commenter)
-"                          [,c ] (_ space, switch and or cancel)
-"                          [,ca] (switch // or /* */)
+" nerdcommenter  ------->  [/cc] (single line)
+"                          [/ci] (multi lines)
+"                          [/cu] (cancel commenter)
+"                          [/c ] (_ space, switch and or cancel)
+"                          [/ca] (switch // or /* */)
 "
-" vim-eaysmotion  ------>  [,,w] (up,   Jump up to file position)
-"                          [,,b] (down, Jump down to file position)
+" vim-eaysmotion  ------>  [<Space>n] (up,   Jump up to file position)
+"                          [<Space>b] (down, Jump down to file position)
 "
-" vim-interestingwords ->  [,k] (Highlight, or Clear every word highlight ), Navigate highlighted words with 'n' and 'N'
+" vim-interestingwords ->  [<Space>k] (Highlight, or Clear every word highlight ), Navigate highlighted words with 'n' and 'N'
 "                          [n]  (Navigate highlighted words, down)
 "                          [N]  (Navigate highlighted words, up)
 "
@@ -1101,9 +2070,39 @@ call InitializeDirectories()
 "                          [:Git status] ()
 "                          [:Git blame] ()
 "                          [:Git mergetool] ()
-
-" vim-startuptime ------>  :StartupTime
-"                          help vim-startuptime
+"
+"
+" vim-multiple-cursors
+"
+"    --------------
+"    def hello(name) 
+"        name = x
+"        puts(name)
+"    end
+"    --------------
+"    keyword:  fp<C-n>
+"    fp<C-n><C-n><C-n>cname
+"    
+"    
+"    --------------
+"    Mon      "Mon" 
+"    Tue  =>  "Tue"
+"    Wed      "Wed"
+"    --------------
+"    keyword:  vip<C-n>i
+"    vip<C-n>i"<Right><Right><Right>",
+"    delete '"', keyword: ds"
+"    
+"    --------------
+"    1   =>  123
+"    2
+"    3      
+"    --------------
+"    keyword: vipgJ
+"    vipgJ$r]Idays = [
+"    
+"    
+"    quit:  <Esc>
 
 " version < 800, 8.0 or 704, 7,4
 if (v:version < 800)
@@ -1126,12 +2125,15 @@ if (v:version < 800)
         Plug 'Shougo/neosnippet-snippets'
         Plug 'honza/vim-snippets'
         Plug 'hari-rangarajan/CCTree'
-        Plug 'dstein64/vim-startuptime'
+        "Plug 'dstein64/vim-startuptime'
         Plug 'ludovicchabant/vim-gutentags'
         "Plug 'junegunn/vim-slash'
         Plug 'mileszs/ack.vim'
         Plug 'voldikss/vim-floaterm'
         Plug 'mhinz/vim-startify'
+        Plug 'dense-analysis/ale'
+        Plug 'yianwillis/vimcdoc'
+        Plug 'Yggdroot/indentLine'
     call plug#end()
 endif
 
@@ -1139,44 +2141,71 @@ endif
 if (v:version >= 800)
 "{
     function! PackLoadAll(Timer)
+        "If vim is too slow to open, you can load vim-airline here, and move it to ./opt
+        "packadd vim-airline
+        "packadd vim-airline-themes
         packadd nerdtree
         packadd tagbar
         packadd vim-nerdtree-tabs
         packadd LeaderF
         "packadd ctrlp.vim
         "packadd ctrlp-funky
+        packadd fzf.vim
         packadd undotree
         packadd nerdcommenter
-        "packadd vim-bufferline
         packadd vim-easymotion
         packadd vim-surround
         "packadd syntastic
+        packadd ale
         packadd auto-pairs
         packadd vim-interestingwords
         packadd rainbow
         packadd vim-repeat
-        packadd neocomplete.vim
-        packadd neoinclude.vim
-        packadd neosnippet
-        packadd neosnippet-snippets
+
+        if g:autocomplete_provider ==# 'ycm'
+            packadd YouCompleteMe
+        elseif g:autocomplete_provider ==# 'neocomplete'
+            packadd neocomplete.vim
+            packadd neoinclude.vim
+            packadd neosnippet
+            packadd neosnippet-snippets
+        elseif g:autocomplete_provider ==# 'deoplete'
+            packadd vim-hug-neovim-rpc
+            packadd nvim-yarp
+            packadd deoplete.nvim
+        elseif g:autocomplete_provider ==# 'autoComplPop'
+            packadd AutoComplPop
+        endif
+        
+        " Chose between vim-snipmate and ultisnips, ultisnips more powerful
+        "packadd vim-snipmate
+        packadd ultisnips
+        packadd vim-snippets
+        
+        packadd vim-illuminate
         packadd vim-multiple-cursors
         packadd vim-fugitive
         packadd tabular
-        packadd vim-snippets
         packadd sessionman.vim
+        packadd vim-bookmarks
         packadd CCTree
-        packadd vim-startuptime
+        "packadd vim-startuptime
         packadd vim-gutentags
+        packadd gutentags_plus
         "packadd vim-slash   "Automatically clears search highlight when cursor is moved
         packadd ack.vim
         packadd vim-floaterm
         packadd vim-startify
+        packadd vim-eunuch
+        packadd colorizer
+        packadd tokyonight-vim
         "packadd vim-preview   "in start/
+        "packadd vimcdoc-2.4.0
+        "call timer_stop(g:Timer)
     endfunction
 
-    noremap <Leader>pp :call PackLoadAll(1)<CR>
+    "noremap <Leader>pp :call PackLoadAll(1)<CR>
 
-    let Timer = timer_start(600, 'PackLoadAll')
+    let g:Timer = timer_start(200, 'PackLoadAll')
     endif
 "}
-

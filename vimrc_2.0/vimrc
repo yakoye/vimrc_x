@@ -1,0 +1,1712 @@
+"======================
+" :helptags ~/.vim/doc
+" :help myhelp
+"======================
+
+filetype on                     "启动文件类型检查
+filetype plugin on              "运行vim加载文件类型插件
+filetype indent on              "根据文件类型进行缩进
+syntax  on                      "开启语法高亮功能
+
+set t_Co=256                    " Enable 256 colors
+set termguicolors               " using 24-bit color
+
+if has('gui_running')
+    if has('unix')
+        " set guifont=Andale\ Mono\ Regular\ 12,Menlo\ Regular\ 11,Consolas\ Regular\ 12,Courier\ New\ Regular\ 14
+        set guifont=Monospace\ 14
+    elseif has('macunix')
+        " set guifont=Andale\ Mono\ Regular:h12,Menlo\ Regular:h11,Consolas\ Regular:h12,Courier\ New\ Regular:h14
+    elseif (has('win32') || has('win64'))
+        " behave mswin
+        " set clipboard=unnamedplus
+        " set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
+    endif
+endif
+
+color  desert                   "设置主题
+function! LoadThemeConfig()
+    " syn match cFunctionmy "\<\h\w*\ze\_s*("
+    syn match cFunctionmy "\<\%(defined\|sizeof\|typeof\)\@!\h\w*\ze\_s*("
+    highlight cFunctionmy guifg=#a6e23e cterm=bold  ctermfg=37
+    
+    syn match cFunctionPointermy "\%((\s*\*\s*\)\@<=\h\w*\ze\s*)\_s*(.*)"
+    highlight cFunctionPointermy guifg=#d7ff00 cterm=bold  ctermfg=76
+
+    syntax match MyOperator "+\|\-\|=\|%\|:\|?\|!\|<\|>\||\|&\|\^\|\~\|\$"
+    syntax match MyOperator "\*\ze[^/]"   " * 后面不是 /
+    syntax match MyOperator "\%([^/]\)\zs\*"  " 前面不是 /
+    syntax match MyOperator "\%([^*]\)\zs/\ze\%([^*/]\)"  "匹配/
+    highlight MyOperator ctermfg=206 guifg=#ff5fd7
+
+    syntax match MyOperator2 "\.\ze[A-Za-z_]"  "匹配.
+    syntax match MyOperator2 "->"  "匹配.
+    " highlight MyOperator2 ctermfg=246 guifg=#949494
+    highlight MyOperator2 ctermfg=086 guifg=#5fffd7
+endfunction
+augroup MyCHighlight
+    autocmd!
+    autocmd FileType c,cpp call LoadThemeConfig()
+    autocmd ColorScheme * call LoadThemeConfig()
+augroup END
+
+let mapleader=' '               " Set the leader key
+
+
+" 自动在 Vim 启动时更新帮助文档 tags
+autocmd VimEnter * call s:UpdateHelpTags()
+
+function! s:UpdateHelpTags() abort
+    " 根据系统选择 doc 路径
+    if has('win32') || has('win64')
+        let l:docpath = expand('~/vimfiles/pack/vendor/opt/vim-dict/doc')
+    else
+        let l:docpath = expand('~/.vim/pack/vendor/opt/vim-dict/doc')
+    endif
+
+    " 确认目录存在并更新 helptags
+    if isdirectory(l:docpath)
+        silent! execute 'helptags' fnameescape(l:docpath)
+    endif
+endfunction
+command! HH help myhelp
+cnoreabbrev hh HH
+
+scriptencoding utf-8
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,chinese,taiwan,japan,korea
+
+set number                      "显示行号
+set visualbell                  "禁止响铃
+set ruler                       "显示当前光标位置
+set autoread                    "文件在Vim之外修改过，自动重新读入
+set autowrite                   "设置自动保存内容
+"set autochdir                   "当前目录随着被编辑文件的改变而改变
+set nocp                        "使用vim而非vi
+set mouse=a                     "开启鼠标支持
+set backspace=indent,eol,start  " indent：允许删除自动缩进。eol：允许删除到上一行。start：允许 Backspace 删除到插入模式开始的位置。
+set wildmenu                    " Show list instead of just completing, 按TAB键时命令行自动补齐
+set wildmode=list:longest,full  " Command <Tab> completion, list matches, then longest common part, then all.
+set whichwrap=b,s,h,l,<,>,[,]   " Backspace and cursor keys wrap too
+set nowrap                      " Do not wrap long lines
+set showmode                    " Display the current mode
+
+set autoindent                  "参考上一行的缩进方式进行自动缩进
+set shiftwidth=4                "每一级缩进的长度
+set expandtab                   " Tabs are spaces, not tabs
+set tabstop=4                   " Let backspace delete indent
+set softtabstop=4               "在编辑模式的时候按退格键的时候退回缩进的长度
+
+set hlsearch                    " 开启搜索结果的高亮显示"
+set incsearch                   " Find as you type search, 边输入边搜索(实时搜索)
+set ignorecase                  " Case insensitive search
+set smartcase                   " Case sensitive when uc present
+set showmatch                   " Show matching brackets/parenthesis
+
+set scrolljump=1                " Lines to scroll when cursor leaves screen
+set scrolloff=3                 " Minimum lines to keep above and below cursor
+
+set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
+set splitright                  " Puts new vsplit windows to the right of the current
+set splitbelow                  " Puts new split windows to the bottom of the current
+
+"set autowrite                       " Automatically write a file when leaving a modified buffer
+set shortmess+=filmnrxoOtT          " Abbrev. of messages (avoids 'hit enter')
+
+" folds：保存/恢复折叠状态（正常、常用）
+" cursor：保存/恢复光标位置（正常、常用）
+" unix,slash：文件格式/路径分隔相关（一般没问题）
+" options：会把大量（窗口/缓冲区相关的）选项也写进 view 文件并在 :loadview 时恢复
+set viewoptions=folds,cursor,unix,slash " Better Unix / Windows compatibility
+if (v:version > 704)
+    set foldmethod=manual               " indent, manual, expr, marker, syntax, diff
+    set nofoldenable                    " When off, all folds are open.
+    set foldnestmax=10                  " Sets the maximum nesting of folds for the "indent" and "syntax" methods.
+endif
+" 自动保存和加载折叠状态（view）
+autocmd BufWinEnter * silent! loadview
+autocmd BufWinLeave * silent! mkview
+
+
+set virtualedit=onemore             " Allow for cursor beyond last character
+set history=1000                    " Store a ton of history (default is 20)
+"set spell                           " Spell checking on
+set nospell                           " Spell checking on
+set hidden                          " Allow buffer switching without saving
+
+" '50     file mark, recent opened file is 50.
+" <50     Registers, Maximum number of lines saved for each register.
+" /50     Search String History, Maxmum number of items in the search pattern history to be saved.
+" :50     Command Line History, number is 50
+" h       Disable the effect of 'hlsearch' when loading the viminfo file.
+" r$TEMP: Removable media. Don't save TEMP info.
+" s10     Maximum size of an item in KBytes, 10KB
+" n/tmp/.viminfo
+" setviminfofile=/tmp/.viminfo
+"set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,/tmp/pengyu/.viminfo
+" ! use to SessionOpenLast, save and restore global variables
+set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,!
+
+set cursorline cursorcolumn     " 高亮显示当前行和当前列
+" augroup cch
+"     autocmd!
+"     autocmd WinLeave * setlocal nocursorline nocursorcolumn
+"     autocmd WinEnter * setlocal cursorline cursorcolumn
+" augroup END
+
+" 插入模式下粘贴
+inoremap <S-Insert> <C-r>+
+
+" 普通模式下粘贴到光标之后
+nnoremap <S-Insert> "+p
+
+" 可视模式下用剪贴板内容替换选中的文本
+vnoremap <S-Insert> "+p
+
+function! Terminal_MetaMode(mode)
+    set ttimeout
+    if $TMUX != ''
+        set ttimeoutlen=30
+    elseif &ttimeoutlen > 80 || &ttimeoutlen <= 0
+        set ttimeoutlen=80
+    endif
+    if has('nvim') || has('gui_running')
+        return
+    endif
+    function! s:metacode(mode, key)
+        if a:mode == 0
+            exec "set <M-".a:key.">=\e".a:key
+        else
+            exec "set <M-".a:key.">=\e]{0}".a:key."~"
+        endif
+    endfunc
+    for i in range(10)
+        call s:metacode(a:mode, nr2char(char2nr('0') + i))
+    endfor
+    for i in range(26)
+        call s:metacode(a:mode, nr2char(char2nr('a') + i))
+        " call s:metacode(a:mode, nr2char(char2nr('A') + i))
+    endfor
+    if a:mode != 0
+        for c in [',', '.', '/', ';', '[', ']', '{', '}']
+            call s:metacode(a:mode, c)
+        endfor
+        for c in ['?', ':', '-', '_']
+            call s:metacode(a:mode, c)
+        endfor
+    else
+        for c in [',', '.', '/', ';', '{', '}']
+            call s:metacode(a:mode, c)
+        endfor
+        for c in ['?', ':', '-', '_']
+            call s:metacode(a:mode, c)
+        endfor
+    endif
+endfunc
+
+" call Terminal_MetaMode(0)
+
+if has('win32') || has('win64')
+    let s:vim_base = expand('~/vimfiles/')
+else
+    let s:vim_base = expand('~/.vim/')
+    "resolve Display 'ESC[?4m' Error
+    if (v:version >= 901)
+        set keyprotocol=
+        let &term=&term
+    endif
+endif
+
+" --------- 模式显示 + 不同模式不同背景色 ---------
+
+" 定义各模式的高亮（你可以改 cterm/guifg/guibg 颜色）
+highlight HLModeNormal   gui=bold guifg= #1c1c1c guibg= #d7ff00 cterm=bold ctermfg=234 ctermbg=190
+highlight HLModeInsert   gui=bold guifg= #1c1c1c guibg= #5f87ff cterm=bold ctermfg=232 ctermbg=4
+highlight HLModeCommand  gui=bold guifg= #1c1c1c guibg= #00d700 cterm=bold ctermfg=232 ctermbg=40
+highlight HLModeVisual   gui=bold guifg= #1c1c1c guibg= #ffaf00 cterm=bold ctermfg=232 ctermbg=214
+highlight HLModeVLine    gui=bold guifg= #1c1c1c guibg= #5f5faf cterm=bold ctermfg=231 ctermbg=61
+highlight HLModeVBlock   gui=bold guifg= #1c1c1c guibg= #af5f00 cterm=bold ctermfg=231 ctermbg=130
+highlight HLModeTerminal gui=bold guifg= #1c1c1c guibg= #00dfff cterm=bold ctermfg=232 ctermbg=45
+highlight HLModeReplace  gui=bold guifg= #1c1c1c guibg= #ff5f5f cterm=bold ctermfg=232 ctermbg=1
+highlight HLModeOther    gui=bold guifg= #1c1c1c guibg= #aaaaaa cterm=bold ctermfg=16  ctermbg=248
+
+" " Configure the status other option
+highlight HLCPath        guifg=#af87d7 ctermfg=100  ctermbg=238
+highlight HLCFileName    guifg=#d7ff00 guibg=#5f5faf ctermfg=190  ctermbg=061
+highlight HLCFileType    guifg=#d7ff00 ctermfg=140  ctermbg=236
+highlight HLCLineNum     guifg=#000000 guibg=#d7ff00 ctermfg=234  ctermbg=190
+
+" 总是显示状态栏
+set laststatus=2
+
+" 返回“模式名称”和“应该用的高亮组”
+function! StatusMode() abort
+    let l:m = mode(1)
+    " 常见模式判定（覆盖 normal/insert/visual/replace/command 等）
+    if l:m =~# '^n'
+        return ['NORMAL', 'HLModeNormal']
+    elseif l:m =~# '^i'
+        return ['INSERT', 'HLModeInsert']
+    elseif l:m =~# '^c'
+        return ['COMMAND', 'HLModeCommand']
+    elseif l:m =~# '^[vV\]'
+        return ['VISUAL', 'HLModeVisual']
+    elseif l:m =~# '^t'
+        return ["TERMINAL", 'HLCModeTerminal']
+    elseif l:m =~# '^R'
+        return ['REPLACE', 'HLModeReplace']
+    else
+        return [toupper(l:m), 'HLModeOther']
+    endif
+endfunction
+
+" 组装 statusline：左侧模式块变色 + 文件信息等
+function! Statusline() abort
+    let [l:name, l:hi] = StatusMode()
+
+    " 左侧：模式块（变色）+ 文件名/选项
+    let l:s  = '%#'.l:hi.'# '.l:name.' %*'                   " MODE (colored)
+
+    " %#HLCFileName# : 切换到你定义的 HLCFileName 高亮组来显示文件名
+    " %(...%)        : 分组（在 statusline 里用于组合一段内容）
+    " %<             : 截断标记（窗口太窄时，从这里开始截断左侧内容）
+    " %f             : 文件名（相对路径）
+    let l:s .= '%#HLCFileName#%( %<%f%) '                    " Filename
+    "   let l:s .= '%#HLCPath#%{getcwd()}/'                  " Current dir (可选)
+
+    " %w : 预览窗口标记（[Preview] 之类；是 preview window 时显示）
+    " %h : help buffer 标记（是 help 时显示）
+    " %m : 修改标记（buffer 被修改过则显示 [+]）
+    " %r : 只读标记（readonly 时显示 [RO]）
+    " 这几个会根据状态自动出现/消失
+    let l:s .= '%w%h%m%r'                                    " Options
+
+    " 右侧
+    let l:s .= '%= '                                         " 左右对齐分隔符
+    
+    " %#HLCFileType# : 使用 HLCFileType 高亮组
+    " %y             : filetype（如 vim/lua/python；为空则显示空）
+    " %{&ff}         : fileformat（&ff），如 unix/dos/mac
+    " 两侧留空格是为了视觉分隔
+    let l:s .= '%#HLCFileType# %y %{&ff} '                   " Filetype + fileformat
+
+        " %#HLCLineNum#  : 使用 HLCLineNum 高亮组
+    " %(...%)        : 分组
+    " %l             : 当前行号（line）
+    " %c             : 当前列号（column）
+    " %V             : 虚拟列号（virtual column；用于 tab/全角等场景）
+    " %p%%           : 当前光标在文件中的百分比（%% 是字面量 %）
+    " 你这里用字面量 '=' 做分隔：' = '
+    " let l:s .= '%#HLCLineNum# %(%l,%c%V%) = %p%% '        " Line/Col + percent
+    let l:s .= '%#'.l:hi.'# '.'%(%l,%c%V%) = %p%% '        " Line/Col + percent
+
+    return l:s
+endfunction
+
+set statusline=%!Statusline()
+
+" 让模式变化时立即刷新（否则可能要等到光标移动才刷新）
+augroup StatuslineModeRefresh
+    autocmd!
+    if exists('##ModeChanged')
+        autocmd ModeChanged * redrawstatus
+    else
+        " 兼容旧版：用一组常见事件逼近“模式变化时刷新”
+        autocmd InsertEnter,InsertLeave,CmdlineEnter,CmdlineLeave * redrawstatus
+        autocmd CursorMoved,CursorMovedI * redrawstatus
+    endif
+augroup END
+
+
+" 当前窗口的状态栏
+" highlight StatusLine ctermfg=white ctermbg=blue guifg=#ffffff guibg=#005f87
+" 非当前窗口的状态栏
+" highlight StatusLineNC ctermfg=grey ctermbg=black guifg=#aaaaaa guibg=#303030
+
+" Reopen the last edited position in files
+function! ResCur()
+    if line("'\"") <= line("$")
+        silent! normal! g`"
+        return 1
+    endif
+endfunction
+
+augroup resCur
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
+augroup END
+
+
+map 9 $                         "通过9跳转到行末尾,0默认跳转到行首
+map <silent>  <C-A>  gg v G     "Ctrl-A 选中所有内容
+
+" Visual shifting (does not exit Visual mode)
+vnoremap < <gv
+vnoremap > >gv
+
+" For when you forget to sudo.. Really Write the file.
+cmap w!! w !sudo tee % >/dev/null
+
+
+" menuone：即使只有一个候选也弹菜单
+" noinsert：不自动把候选插入到文本里
+" noselect：不自动选中第一项（更像“只是提示”，需要你确认）
+set completeopt=menu,menuone,noselect
+
+" This is used for the auto-completion feature
+" <BS> 和 CTRL‑H 删除一个字符，并查找光标前变短的单词的匹配项。这可能会发现更
+"     多的匹配项。
+" CTRL‑L     从当前匹配项中增加一个字符，可能会减少匹配项的数量。
+" 任何可显示的非空白字符: 
+" 加入该字符，减少匹配项的数量。
+
+" 在全部三个状态下，可以使用以下这些键:
+" CTRL‑Y     是 (Yes): 接受当前选择的匹配项并停止补全。
+" CTRL‑E     结束 (End) 补全，回退到选择匹配前原有的内容 (原先输入的或者
+"            最长的公共字符串)。
+" <PageUp>   反向若干项选择一个匹配项，但不插入。
+" <PageDown> 正向若干项选择一个匹配项，但不插入。 
+" <Up>       选择前一个匹配，同 CTRL‑P，但不插入。
+" <Down>     选择后一个匹配，同 CTRL‑N，但不插入。 
+" <Space> 或 <Tab> 停止补全，不改变匹配，插入键入的字符
+
+" <Enter> 、<Tab>键的行为取决于你现在所处的状态:
+
+if exists('*complete_info')
+    inoremap <expr><CR>  pumvisible() ? (complete_info().selected != -1 ? "\<C-y>" : "\<C-e>") : "\<CR>"
+    inoremap <expr><TAB> pumvisible() ? (len(complete_info(['items']).items) == 1 ? "\<C-y>" : "\<C-n>") : "\<TAB>"
+else
+    inoremap <expr><CR>  pumvisible() ? "\<C-y>" : "\<CR>"
+    inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+endif
+    
+
+" === 显示 Buffer Tab 栏 ===
+set showtabline=2
+set guioptions-=e
+
+" === 标签页高亮颜色设置 ===
+" TabLineSel 标签页行，活动标签页标签。
+highlight TabLineSel ctermfg=black ctermbg=yellow guifg=#000000 guibg=#D7FF00
+
+" TabLine 标签页行，非活动标签页标签。
+highlight TabLine ctermfg=white ctermbg=black guifg=#aaaaaa guibg=#1C1C1C
+
+" TabLineFill 标签页行，没有标签的地方。
+" highlight TabLineFill ctermfg=white ctermbg=black guifg=#000000 guibg=#1C1C1C
+
+" highlight TabLineSel ctermfg=white ctermbg=blue guifg=#ffffff guibg=#005f87
+" highlight TabLine ctermfg=grey ctermbg=black guifg=#aaaaaa guibg=#303030
+" highlight TabLineFill ctermfg=grey ctermbg=black guifg=#aaaaaa guibg=#303030
+function! MyBufferLine()
+    let s = ''
+    for i in range(1, bufnr('$'))
+        " if buflisted(i)
+        if buflisted(i) && (bufloaded(i) || i == bufnr('%'))
+            " 获取文件名或 [No Name]
+            let name = bufname(i)
+            if empty(name)
+                let buffername = i . ':[No Name]'
+            else
+                let buffername = i . ':' . fnamemodify(name, ':t')
+            endif
+
+            " 如果已修改，加 * 标记
+            if getbufvar(i, '&modified')
+                let buffername .= '*'
+            endif
+
+            " 如果是只读文件，加 [RO] 标记
+            if getbufvar(i, '&readonly')
+                let buffername .= '[RO]'
+            endif
+
+            " echom 'Current Buffer: ' . i  bufnr('%')
+            " 当前 buffer 高亮
+            if i == bufnr('%')
+                let s .= '%' . i . 'T' . '%#TabLineSel#' . ' ' . buffername . ' ' . '%#TabLine#'
+            else
+                let s .= '%' . i . 'T' . '%#TabLine#' . ' ' . buffername . ' ' . '%#TabLine#'
+            endif
+        endif
+    endfor
+    return s
+endfunction
+set tabline=%!MyBufferLine()
+
+
+function! DeleteCurrentAndGoPrevBuffer()
+    let l:current = bufnr('%')
+    let l:prev = GetPrevBuffer()
+    if l:prev > 0 && l:prev != l:current
+        execute 'buffer ' . l:prev
+    endif
+    execute 'bdelete ' . l:current
+endfunction
+
+function! GetPrevBuffer()
+    let buflist = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+    let current = bufnr('%')
+    let idx = index(buflist, current)
+    if idx > 0
+        return buflist[idx - 1]
+    endif
+    return -1
+endfunction
+
+" 快捷键：关闭当前 buffer
+nnoremap <Leader>bd :call DeleteCurrentAndGoPrevBuffer()<CR>
+
+nnoremap <C-Left>  :bprev<CR>
+nnoremap <C-Right> :bnext<CR>
+tnoremap <C-Left>  <C-\><C-n>:bprev<CR>
+tnoremap <C-Right> <C-\><C-n>:bnext<CR>
+
+" 设置自动补全
+" let g:completion_trigger_length = 1
+function! s:smart_complete()
+    " Get the current column number, adjusting for zero-based index
+    let l:col = col('.') - 1
+    " Get the content of the current line up to the current column position
+    let l:line = getline('.')[0 : l:col-1]
+
+    " Debug: Uncomment the line below to print the current word being analyzed
+    " echom 'Current Word: ' . matchstr(l:line, '\v\w+$')
+  
+    " Check for an empty line or a whitespace character just before the
+    " cursor
+    if l:line =~ '^\s*$' || l:line[-1:] =~ '\s'
+        if pumvisible() | call feedkeys("\<C-E>") | endif
+        return
+    endif
+
+    " Extract the current word from the input line based on alphanumeric
+    " characters
+    let l:current_word = matchstr(l:line, '\v\w+$')
+    " Trigger completion if the current word length is greater than or equal
+    " to the threshold and the completion menu is not visible
+    if len(l:current_word) > g:completion_trigger_length && !pumvisible()
+        call feedkeys("\<C-N>", 'n')
+    endif
+endfunction
+
+" 设置补全行为不自动插入
+" set completeopt=menuone,noinsert,noselect
+" Set an autocmd for specific file types (python, c, cpp) to trigger the
+" smart_complete function
+" autocmd FileType text,vim,python,c,cpp autocmd TextChangedI * call s:smart_complete()
+"autocmd TextChangedI * call s:smart_complete()
+
+" 优化Netrw显示
+" let g:netrw_banner = 0
+" let g:netrw_liststyle = 3
+" let g:netrw_winsize = 30  " 设置默认窗口占比
+" let g:netrw_altv = 1      " 强制在左侧打开新分割
+" let g:netrw_mousemaps = 0 " 关闭 netrw 的鼠标映射
+" let g:netrw_browse_split = 1  " 打开文件覆盖活跃窗口
+
+" 增强版左侧切换函数
+function! ToggleNetrwLeft()
+    let l:origin_win = winnr()
+    let l:curfile = expand('%:p')
+    let l:curfilename = expand('%:t')
+    let l:curdir = expand('%:p:h')
+    " 查找已存在netrw窗口
+    let l:netrw_winlist = filter(range(1, winnr('$')), 'getwinvar(v:val, "&filetype") ==# "netrw"')
+    if !empty(l:netrw_winlist)
+        " 目录已开，关闭之
+        execute l:netrw_winlist[0] . "wincmd w"
+        close
+        if l:origin_win <= winnr('$')
+            execute l:origin_win . "wincmd w"
+        else
+            execute winnr('$') . "wincmd w"
+        endif
+    else
+        " 跳到当前文件目录并开启netrw
+        execute 'silent! Lexplore! ' . fnameescape(l:curdir)
+        " 保证netrw在最左
+        wincmd H
+        vert resize 30
+        setlocal winfixwidth
+        setlocal nonumber norelativenumber
+        setlocal signcolumn=no
+        setlocal cursorline
+        nnoremap <buffer> <silent> q :close<CR>
+        " 自动切到右侧文件(主窗口)
+        augroup MyNetrwSwitch
+            autocmd!
+            autocmd BufLeave <buffer> if &filetype ==# 'netrw' && winnr('$') > 1 | wincmd l | endif
+        augroup END
+        " --- 自动选中文件, 类似NERDTreeFind ---
+        " 延迟一点确保 netrw 列表生成完毕
+        call timer_start(30, {-> execute('call search(' . string(l:curfilename) . ', "w")')}, {'repeat': 1})
+    endif
+endfunction
+" nnoremap <silent> <leader>e :call ToggleNetrwLeft()<CR>
+
+function! JumpToFunctionList()
+    if &filetype ==# 'c' || &filetype ==# 'cpp' || &filetype ==# 'h' || &filetype ==# 'hpp'
+        let pattern = '^\s*\(void\|char\|int\|float\|double\|static\|bool\|unsigned\|long\|short\|struct\)\s\+\(\w\+\s*\*\s*\)*\w\+\s*('
+    elseif &filetype ==# 'python'
+        let pattern = '^\s*def\s\+\w\+\s*('
+    elseif &filetype ==# 'javascript'
+        let pattern = '^\s*function\s\+\w\+\s*('
+    elseif &filetype ==# 'java'
+        let pattern = '^\s*\(public\|private\|protected\)\?\s*\w\+\s\+\w\+\s*('
+    else
+        let pattern = '.*'
+    endif
+
+    cclose
+    silent! execute 'vimgrep/' . pattern . '/ %'
+    if len(getqflist()) > 0
+        copen
+    else
+        echo "No function definitions found."
+    endif
+endfunction
+" nnoremap <silent> <leader>t :call JumpToFunctionList()<CR>
+
+function! ShowTagsSourcePopup()
+    let l:word = expand('<cword>')
+    let l:tags = taglist(l:word)
+    " echom l:tags
+    if empty(l:tags)
+        echo "No tags found for " . l:word
+        return
+    endif
+
+    let l:items = []
+    for l:tag in l:tags
+        let l:file = l:tag.filename
+        let l:line = str2nr(get(l:tag, 'line', '0'))
+        let l:src_line = '[No source line]'
+
+        " 有行号的情况直接读那一行
+        if filereadable(l:file) && l:line > 0
+            let l:src_list = getbufline(bufadd(l:file), l:line)
+            if !empty(l:src_list)
+                let l:src_line = substitute(l:src_list[0], '^\s*\|\s*$', '', 'g')
+            endif
+        " 没行号但有 cmd=搜索模式 的情况
+        elseif has_key(l:tag, 'cmd') && l:tag.cmd =~ '^/'
+            let l:pattern = matchstr(l:tag.cmd, '^/\(.*\)/$')
+            for line_text in readfile(l:file)
+                if line_text =~ l:pattern
+                    let l:src_line = substitute(line_text, '^\s*\|\s*$', '', 'g')
+                    break
+                endif
+            endfor
+        endif
+
+        call add(l:items, printf("%s [%s:%d]",
+                    \ l:src_line, fnamemodify(l:file, ':t'), l:line))
+    endfor
+
+    highlight MyPopup guibg=#5f00ff guifg=#ffffff  " 内容区域：深背景+白字
+    " 在光标位置正上方弹出选择菜单
+    " let choice = popup_atcursor(l:items, #{title: l:word, pos: 'botleft', maxheight: 10})
+    let choice = popup_atcursor(l:items, #{pos: 'botleft', maxheight: 10, highlight: 'MyPopup'})
+
+    " 回车选择后跳转
+    if choice >= 1 && choice <= len(l:tags)
+        execute 'edit +' . l:tags[choice - 1].line . ' ' . l:tags[choice - 1].filename
+    endif
+endfunction
+
+" <silent> 避免状态栏显示调用命令
+nnoremap <silent> <leader>] :call ShowTagsSourcePopup()<CR>
+
+
+
+function! ToggleComment()
+    let l:ft = &filetype
+    let l:line = getline('.')
+    if l:ft =~? '^\(c\|cpp\|h\|hpp\)$'
+        let l:comment = '//'
+    elseif l:ft =~? '^\(sh\|zsh\|shell\|bash\)$' || l:ft ==# 'python' || l:ft ==# 'make'
+        let l:comment = '#'
+    elseif l:ft ==# 'vim'
+        let l:comment = '"'
+    elseif l:ft ==# 'lua'
+        let l:comment = '--'
+    else
+        let l:comment = '#'
+    endif
+
+    if l:line =~# '^\s*' . escape(l:comment, '#/\"')
+        call setline('.', substitute(l:line, '^\(\s*\)' . escape(l:comment, '#/\"') . '\s\?', '\1', ''))
+    else
+        call setline('.', substitute(l:line, '^\s*', '\0' . l:comment . ' ', ''))
+    endif
+endfunction
+
+function! ToggleCommentVisual()
+    let l:start = line("'<")
+    let l:end = line("'>")
+    let l:ft = &filetype
+    if l:ft =~? '^\(c\|cpp\|h\|hpp\)$'
+        let l:comment = '//'
+    elseif l:ft =~? '^\(sh\|zsh\|shell\|bash\)$' || l:ft ==# 'python' || l:ft ==# 'make'
+        let l:comment = '#'
+    elseif l:ft ==# 'vim'
+        let l:comment = '"'
+    elseif l:ft ==# 'lua'
+        let l:comment = '--'
+    else
+        let l:comment = '#'
+    endif
+    let uncomment = 1
+    for lnum in range(l:start, l:end)
+        if getline(lnum) !~# '^\s*' . escape(l:comment, '#/\"')
+            let uncomment = 0
+            break
+        endif
+    endfor
+    for lnum in range(l:start, l:end)
+        let l:line = getline(lnum)
+        if uncomment
+            call setline(lnum, substitute(l:line, '^\(\s*\)' . escape(l:comment, '#/\"') . '\s\?', '\1', ''))
+        else
+            call setline(lnum, substitute(l:line, '^\s*', '\0' . l:comment . ' ', ''))
+        endif
+    endfor
+endfunction
+
+" 单行快捷键
+" nnoremap <silent> <C-_> :call ToggleComment()<CR>
+" 可视块/多行快捷键
+" vnoremap <silent> <C-_> :<C-u>call ToggleCommentVisual()<CR>
+
+
+" set nobackup                    " No backups
+" set noswapfile                  " No swap files
+" set nowritebackup               " No write backup
+
+" backup / undofile 
+set backup                  " Backups are nice ...
+if has('persistent_undo')
+    set undofile                " So is persistent undo ...
+    set undolevels=1000         " Maximum number of changes that can be undone
+    set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
+endif
+
+" Initialize directories {
+function! InitializeDirectories()
+    let parent = $HOME
+    let prefix = 'vim'
+    let dir_list = {
+                \ 'backup':    'backupdir',
+                \ 'views':     'viewdir',
+                \ 'bookmarks': 'directory',
+                \ 'swap':      'directory' }
+
+    if has('persistent_undo')
+        let dir_list['undo'] = 'undodir'
+    endif
+
+    " To specify a different directory in which to place the vimbackup,
+    " vimviews, vimundo, and vimswap files/directories, add the following to
+    " your .vimrc.before.local file:
+    "   let g:mydefine_consolidated_directory = <full path to desired directory>
+    "   eg: let g:mydefine_consolidated_directory = $HOME . '/.vim/'
+    if exists('g:mydefine_consolidated_directory')
+        let common_dir = g:mydefine_consolidated_directory . prefix
+    else
+        let common_dir = parent . '/.' . prefix
+    endif
+
+    for [dirname, settingname] in items(dir_list)
+        let directory = common_dir . dirname . '/'
+        if exists("*mkdir")
+            if !isdirectory(directory)
+                call mkdir(directory)
+            endif
+        endif
+        if !isdirectory(directory)
+            echo "Warning: Unable to create backup directory: " . directory
+            echo "Try: mkdir -p " . directory
+        else
+            let directory = substitute(directory, " ", "\\\\ ", "g")
+            exec "set " . settingname . "=" . directory
+        endif
+    endfor
+endfunction
+call InitializeDirectories()
+" }
+
+
+function! LoadLeaderF()
+    if isdirectory(s:vim_base . '/pack/vendor/opt/LeaderF')
+        call ConfigLeaderF()
+        packadd LeaderF
+    endif
+endfunction
+
+function! ConfigLeaderF()
+    if v:version > 704 || (v:version == 704 && has("patch1126"))
+        "change the position of the LeaderF window,'fullscreen', 'top', 'bottom', 'left',
+        " 'right', 'popup', default: 'bottom'
+        "let g:Lf_WindowPosition = 'popup'
+        let g:Lf_WindowHeight = 0.30  " = 30%, height of the LeaderF window, only use 'top' or 'bottom'
+        
+        " don't show the help in normal mode
+        let g:Lf_HideHelp = 1
+        let g:Lf_UseCache = 0
+        let g:Lf_UseVersionControlTool = 0
+        let g:Lf_IgnoreCurrentBufferName = 1
+        let g:Lf_StlColorscheme = 'Powerline' "popup  powerline  solarized  onedark one
+        "let g:Lf_AutoResize = 1
+        let g:Lf_MruEnableFrecency = 1
+        
+        " apply only to g:Lf_WindowPosition = 'popup'
+        "let g:Lf_PopupPosition = [5, 0]
+        "let g:Lf_PopupHeight = 0.3
+        let g:Lf_PreviewCode = 1
+        let g:Lf_PreviewResult = {
+                \ 'File': 1,
+                \ 'Buffer': 1,
+                \ 'Mru': 1,
+                \ 'Tag': 1,
+                \ 'BufTag': 1,
+                \ 'Function': 1,
+                \ 'Line': 1,
+                \ 'Colorscheme': 0,
+                \ 'Rg': 1,
+                \ 'Gtags': 1
+                \}
+        
+        " Set patterns for LeaderF to ignore specific directories and file types
+        let g:Lf_WildIgnore = {
+            \ 'dir': ['.git', '.hg', '.svn'],
+            \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class', '*.cdkproj']
+            \ }
+        
+        " Configure LeaderF to ignore certain files and directories specifically for the Most Recently Used (MRU) functionality
+        let g:Lf_MruWildIgnore = {
+            \ 'dir': ['.git', '.hg', '.svn'],
+            \ 'file': ['*.o', '*.a', '*.d', '*.i', '*.s', '*.bc', '*.so', '*.pyc', '*.swp', '*.class', '*.cdkproj']
+            \}
+
+        " Difference from g:Lf_WildIgnore:
+        " g:Lf_WildIgnore is used for general file and directory ignoring across all LeaderF functionalities,
+        " such as file searching, whereas g:Lf_MruWildIgnore and g:Lf_MruFileExclude specifically tailor
+        " what appears in the MRU list, impacting only the MRU functionality.
+
+        " If needs
+        set ambiwidth=double
+        "let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+
+        " LeaderfFile
+        let g:Lf_ShortcutF = '<C-P>'
+        noremap <leader>p :LeaderfFileCword<CR>
+        
+        " noremap <C-L> :LeaderfMru<CR>
+        noremap <leader>l :LeaderfMru<CR>
+        noremap <leader>b :LeaderfBuffer<CR>
+        
+        "LeaderfBuffer
+        let g:Lf_ShortcutB = '<C-B>'
+
+        let g:Lf_CommandMap = {'<C-K>': ['<Up>'], 
+                            \ '<C-J>': ['<Down>']}
+        
+        "noremap <leader>fs :<C-U><C-R>=printf("Leaderf file %s", "")<CR><CR>
+        "" preview all Line
+        " nnoremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+        "" preview all tag, such as function
+        " nnoremap <leader>t :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+        nnoremap <leader>s :<C-U><C-R>=printf("Leaderf tag --input %s", expand("<cword>"))<CR><CR>
+        "" preview all tag, such as function, more detail
+        nnoremap <leader>f :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+        " nnoremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+        "noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+
+        let g:Lf_RgConfig = [
+            \ "--glob=!git/*",
+            \ "--glob=!cscope.*",
+            \ "--glob=!tags*",
+            \ "--hidden"
+            \ ]
+        " search word under cursor, the pattern is treated as regex, and enter
+        " normal mode directly
+        nnoremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+        
+        " search word under cursor literally in all listed buffers
+        "nnoremap <C-D> :<C-U><C-R>=printf("Leaderf! rg --all-buffers -e %s ", expand("<cword>"))<CR>
+        
+        " recall last search. If the result window is closed, reopen it.
+        nnoremap <leader>gr :<C-U>Leaderf! rg --recall<CR>
+        
+        " search word under cursor literally only in current buffer
+        nnoremap <leader>gc :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+        
+        " search visually selected text literally
+        xnoremap <leader>gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+        
+        " should use `Leaderf gtags --update` first
+        let g:Lf_GtagsAutoGenerate = 1
+        let g:Lf_GtagsAutoUpdate = 1
+        let g:Lf_Gtagslabel = 'native-pygments'
+        " gtags update
+        nnoremap <leader>gu :Leaderf gtags --update<CR>
+        " 跳到定义
+        noremap <leader>d :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+        " 查找引用
+        noremap <leader>r :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+        
+        "nnoremap <leader>dg :Leaderf gtags -d <C-R><C-W><CR> " 跳到定义
+        "nnoremap <leader>dr :Leaderf gtags -r <C-R><C-W><CR> " 查找引用
+        " 查找符号
+        noremap <leader>hs :<C-U><C-R>=printf("Leaderf! gtags -s %s --auto-jump", expand("<cword>"))<CR><CR>
+        " 字符串匹配搜索
+        noremap <leader>hg :<C-U><C-R>=printf("Leaderf! gtags -g %s --auto-jump", expand("<cword>"))<CR><CR>
+        " Recal: 重新打开上一次的 gtags 搜索结果窗口。
+        noremap <leader>ho :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+        " Next：跳转到 gtags 搜索结果中的下一个匹配位置。
+        noremap <leader>hn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+        " Previous：跳转到 gtags 搜索结果里的上一个匹配位置。
+        noremap <leader>hp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+        " 保存时会自动更新gtags索引
+        "autocmd BufWritePost * silent! !gtags --gtagslabel=pygments
+    endif
+endfunction
+
+augroup MyNetrwUnmap
+    autocmd!
+    autocmd FileType netrw silent! nunmap <buffer> <C-L>
+augroup END
+nnoremap <silent> <C-P> :call MyLeaderFFileShortcut()<CR>
+nnoremap <silent> <C-L> :call MyLeaderFMruShortcut()<CR>
+function! MyLeaderFFileShortcut()
+    if exists(':Leaderf')
+        " 已加载，直接用 LeaderF
+        Leaderf file
+    else
+        " 未加载，先加载插件
+        call LoadLeaderF()
+        Leaderf file
+    endif
+endfunction
+function! MyLeaderFMruShortcut()
+    if exists(':Leaderf')
+        " 已加载，直接用 LeaderF
+        Leaderf mru
+    else
+        " 未加载，先加载插件
+        call LoadLeaderF()
+        Leaderf mru
+    endif
+endfunction
+
+" ==== nerdtree ====
+function! LoadNerdtree()
+    if isdirectory(s:vim_base . '/pack/vendor/opt/nerdtree')
+        packadd nerdtree
+        call ConfigNerdtree()
+    endif
+endfunction
+
+function! ConfigNerdtree()
+    let NERDTreeShowBookmarks=1
+    let NERDTreeChDirMode=0
+    let NERDTreeQuitOnOpen=0
+    let NERDTreeMouseMode=2
+    let NERDTreeShowHidden=1
+    let NERDTreeKeepTreeInNewTab=1
+    let NERDTreeAutoCenter=1
+    let NERDTreeAutoCenterThreshold=3
+    let g:nerdtree_tabs_open_on_gui_startup=0
+    let g:nerdtree_tabs_open_on_console_startup=0
+    let g:nerdtree_tabs_smart_startup_focus=2
+    let g:nerdtree_tabs_on_new_tab=1
+    let g:nerdtree_tabs_autoclose=0
+    let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$',
+                        \ '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$',
+                        \ '^cscope\.*', '^tags$']
+    
+    " function! NERDTreeToggleOrFind()
+    "     if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+    "         NERDTreeToggle
+    "     else
+    "         if expand('%') != ''
+    "             NERDTreeFind
+    "         else
+    "             NERDTreeToggle
+    "         endif
+    "     endif
+    " endfunction
+
+    function! NERDTreeToggleAndFind() abort
+        " 如果当前就在 NERDTree，先回到上一个窗口，避免 Toggle 关错窗口
+        if &filetype ==# 'nerdtree'
+            wincmd p
+        endif
+
+        let l:curwin = win_getid()
+
+        if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+            silent! NERDTreeToggle
+        else
+            if expand('%:p') !=# '' && &buftype ==# ''
+                silent! NERDTreeFind
+            else
+                silent! NERDTreeToggle
+            endif
+        endif
+
+        " 把焦点拉回编辑窗口
+        call win_gotoid(l:curwin)
+    endfunction
+
+    function! NERDTreeOpenAndFind() abort
+        " 在 NERDTree 窗口里按也没事：先回到编辑窗口
+        if &filetype ==# 'nerdtree'
+            wincmd p
+        endif
+
+        " 没有当前文件就只打开树
+        if expand('%:p') ==# '' || &buftype !=# ''
+            silent! NERDTree
+            return
+        endif
+
+        " 判断 NERDTree 窗口是否存在
+        let l:tree_visible = exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
+
+        " 无论树是否存在，都定位到当前文件：
+        " - 不存在时，NERDTreeFind 会自动打开树并定位
+        " - 存在时，NERDTreeFind 只会定位
+        silent! NERDTreeFind
+    endfunction
+
+    nnoremap <C-e> :call NERDTreeToggleAndFind()<CR>
+    nnoremap <leader>e :call NERDTreeOpenAndFind()<CR>
+
+    " map <C-e> :NERDTreeToggle<CR>
+    "map <leader>e :NERDTreeFind<CR>
+    "nmap <leader>nt :NERDTreeFind<CR>
+
+    let s:last_bufnr = -1
+
+    function! s:NERDTreeSyncOnBufChange() abort
+        " 点到 NERDTree 时不要触发，否则必然抢焦点乱跳
+        if &filetype ==# 'nerdtree' | return | endif
+        if &filetype =~# '^LeaderF' | return | endif
+        
+        " LeaderF 预览/内部 buffer：/Lf_preview_xxx
+        if bufname('%') =~# 'Lf_preview_' | return | endif
+        if bufname('%') =~# '^LeaderF://' | return | endif
+
+        " 只对真实文件生效（LeaderF 预览这种通常不是可读文件）
+        let l:path = expand('%:p')
+        if l:path ==# '' || !filereadable(l:path) | return | endif
+
+        if !exists('t:NERDTreeBufName') || bufwinnr(t:NERDTreeBufName) == -1 | return | endif
+        let l:bn = bufnr('%')
+        if l:bn == s:last_bufnr | return | endif
+        let s:last_bufnr = l:bn
+
+        let l:curwin = win_getid()
+        let l:save_cwd = getcwd()
+
+        try
+            if exists('*g:NERDTreeDirNodeGetRoot')
+                let l:root = g:NERDTreeDirNodeGetRoot()
+                if type(l:root) == type({}) && has_key(l:root, 'path')
+                    execute 'lcd' fnameescape(l:root.path.str())
+                endif
+            endif
+
+            silent! NERDTreeFind
+        finally
+            execute 'lcd' fnameescape(l:save_cwd)
+            call win_gotoid(l:curwin)
+        endtry
+
+        " 居中当前文件所在行（避免显示在顶端）
+        silent! normal! zz
+    endfunction
+
+    augroup NerdTreeSync
+        autocmd!
+        autocmd BufEnter * call <SID>NERDTreeSyncOnBufChange()
+    augroup END
+
+
+endfunction
+
+" ==== Tagbar ====
+function! LoadTagbar()
+    if isdirectory(s:vim_base . '/pack/vendor/opt/tagbar')
+        packadd tagbar
+        call ConfigTagbar()
+    endif
+endfunction
+
+function! ConfigTagbar()
+    "auto open tagbar, when vim open
+    "autocmd VimEnter *Tagbar
+    let g:tagbar_autofocus = 1
+    let g:tagbar_width = max([25, winwidth(0) / 5])
+    let g:tagbar_autoclose = 0
+    let g:tagbar_sort = 0              " 0 = order by file location; 1 = order by name
+    let g:tagbar_map_togglesort = "s"  " troggle sort order between name and file order
+    let g:tagbar_autoshowtag = 1
+    let g:tagbar_use_async  = 1
+    let g:tagbar_previewwin_pos = "aboveleft"
+    "let g:tagbar_autopreview = 1
+    "let g:tagbar_autoshowtag = 1
+    "set previewpopup=height:10,width:60
+    set updatetime=1000
+    
+    function! SetTagbarWidth()
+        let g:tagbar_width = max([25, winwidth(0) / 5])
+    endfunction
+    nnoremap <silent> <leader>t :call SetTagbarWidth()<CR>:TagbarToggle<CR>
+
+    "let g:timer_tagbar = -1
+    function! AutoTagbarToggle(timer)
+        silent execute 'TagbarCurrentTag'
+        "call timer_stop(g:timer_tagbar)
+    endfunction
+
+    augroup AutoTagbar
+        autocmd!
+        silent autocmd VimEnter * let g:timer_tagbar = timer_start(100, 'AutoTagbarToggle')
+    augroup END
+endfunction
+
+
+" ==== vim-illuminate ====
+function! LoadIilluminate()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-illuminate')
+        packadd vim-illuminate
+        call ConfigIilluminate()
+    endif
+endfunction
+
+function! ConfigIilluminate()
+    " 在这里配置 vim-illuminate（一般无需额外配置）
+endfunction
+
+" ==== vim-dict ====
+function! LoadVimdict()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-dict')
+        packadd vim-dict
+        call ConfigVimdict()
+    endif
+endfunction
+
+function! ConfigVimdict()
+    " set dictionary+=~/vimfiles/pack/vendor/opt/vim-dict/dict/c.dict
+
+    " 在这里配置 vim-dict
+    let g:vim_dict_dict = [
+    \ '~/.vim/dict',
+    \ '~/vimfiles/dict',
+    \ '~/.config/nvim/dict',
+    \ ]
+endfunction
+
+if has('win32') || has('win64')
+    let g:vim_dict_dir = expand('~/vimfiles/pack/vendor/opt/vim-dict/dict')
+else
+    let g:vim_dict_dir = expand('~/.vim/pack/vendor/opt/vim-dict/dict')
+endif
+function! LoadMyDict(ft)
+    let l:file = g:vim_dict_dir . '/' . a:ft . '.dict'
+    " echom "Trying to load dict: " . l:file
+    if filereadable(l:file)
+        execute 'setlocal dictionary+=' . fnameescape(l:file)
+    endif
+endfunction
+autocmd FileType c,cpp call LoadMyDict(&filetype)
+autocmd FileType python call LoadMyDict(&filetype)
+autocmd FileType vim call LoadMyDict(&filetype)
+autocmd FileType make call LoadMyDict(&filetype)
+autocmd FileType cmake call LoadMyDict(&filetype)
+autocmd FileType sh,bash,zsh call LoadMyDict(&filetype)
+autocmd FileType batch call LoadMyDict(&filetype)
+
+
+" ==== AutoComplPop, old auto complete====
+function! LoadAutoComplPop()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/AutoComplPop')
+        packadd AutoComplPop
+        call ConfigAutoComplPop()
+    endif
+endfunction
+
+function! ConfigAutoComplPop()
+    " 在这里配置 AutoComplPop（一般无需额外配置）
+
+endfunction
+
+    " Enable omni completion.
+    autocmd FileType c,cpp setlocal omnifunc=ccomplete#CompleteCpp
+    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    autocmd FileType vim setlocal omnifunc=vimcomplete#Complete
+    autocmd FileType sh,bash,zsh setlocal omnifunc=shcomplete#Complete
+    autocmd FileType make setlocal omnifunc=makecomplete#Complete
+    autocmd FileType markdown,text setlocal omnifunc=txtcomplete#Complete
+    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+    autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+" ==== vim-interestingwords ====
+function! LoadVimInterestingwords()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-interestingwords')
+        packadd vim-interestingwords
+        call ConfigVimInterestingwords()
+    endif
+endfunction
+
+function! ConfigVimInterestingwords()
+    " use Keymap => <leader>k ColorWords , <leader>K unColorWords
+    let g:interestingWordsRandomiseColors = 1
+
+    " max support words number is 24.
+    "let g:interestingWordsGUIColors = ['#8CCBEA', '#A4E57E', '#FFDB72', '#FF7272', 
+                                      \ '#FFB3FF', '#9999FF', '#B5F5EC', '#FFFDD0', 
+                                      \ '#BAE637', '#D0BFFF', '#50E3C2', '#FCC419']
+    
+    " [TermColors] and [GUIColors] are not directly one-to-one correspondences.
+    let g:interestingWordsGUIColors  = ['#005fff', '#008700', '#00afaf', '#00d7ff', '#00ffff', 
+                                      \ '#5f5fff', '#5fafaf', '#5fffd7', '#875fd7', '#87afd7', 
+                                      \ '#87ffaf', '#af5fff', '#af875f', '#afafff', '#afff00', 
+                                      \ '#d75fff', '#d7d75f', '#ff00af', '#ff5faf', '#ff875f', 
+                                      \ '#ff87af', '#ffaf00', '#ffd787', '#ffff00']
+    let g:interestingWordsTermColors = ['027',     '028',     '037',     '045',     '051',
+                                      \ '063',     '073',     '086',     '098',     '110',     
+                                      \ '121',     '135',     '137',     '147',     '154',
+                                      \ '171',     '185',     '199',     '205',     '209',     
+                                      \ '211',     '214',     '222',     '226']
+endfunction
+
+" ==== nerdcommenter ====
+function! LoadNerdcommenter()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/nerdcommenter')
+        packadd nerdcommenter
+        call ConfigNerdcommenter()
+    endif
+endfunction
+
+function! ConfigNerdcommenter()
+    let g:NERDCreateDefaultMappings = 0
+    " Add spaces after comment delimiters by default
+    let g:NERDAltDelims_c = 1
+    let g:NERDAltDelims_cpp = 1
+    let g:NERDAltDelims_h = 1
+    " <C-_>, map use [ Ctrl + /]
+    if has("gui_running")
+        nnoremap <C-/>       <Plug>NERDCommenterToggle
+        vnoremap <C-/>       <Plug>NERDCommenterToggle
+        nnoremap <S-C-?>     <Plug>NERDCommenterAltDelims
+        vnoremap <S-C-?>     <Plug>NERDCommenterAltDelims
+    else
+        nnoremap <C-_>       <Plug>NERDCommenterToggle
+        vnoremap <C-_>       <Plug>NERDCommenterToggle
+        nnoremap <C-?>       <Plug>NERDCommenterAltDelims
+        vnoremap <C-?>       <Plug>NERDCommenterAltDelims
+    endif
+
+    " <C-_>, map use [ Ctrl + /]
+    " nnoremap ,c$         <Plug>NERDCommenterToEOL
+    nnoremap ,ca         <Plug>NERDCommenterAltDelims
+    " nnoremap ,cA         <Plug>NERDCommenterAppend
+    " nnoremap ,cb         <Plug>NERDCommenterAlignBoth
+    nnoremap ,cc         <Plug>NERDCommenterComment
+    " nnoremap ,ci         <Plug>NERDCommenterInvert
+    " nnoremap ,cl         <Plug>NERDCommenterAlignLeft
+    " nnoremap ,cm         <Plug>NERDCommenterMinimal
+    " nnoremap ,cn         <Plug>NERDCommenterNested
+    " nnoremap ,cs         <Plug>NERDCommenterSexy
+    nnoremap ,cu         <Plug>NERDCommenterUncomment
+    " nnoremap ,cy         <Plug>NERDCommenterYank
+    
+    " vnoremap ,c$         <Plug>NERDCommenterToEOL
+    vnoremap ,ca         <Plug>NERDCommenterAltDelims
+    " vnoremap ,cA         <Plug>NERDCommenterAppend
+    " vnoremap ,cb         <Plug>NERDCommenterAlignBoth
+    vnoremap ,cc         <Plug>NERDCommenterComment
+    " vnoremap ,ci         <Plug>NERDCommenterInvert
+    " vnoremap ,cl         <Plug>NERDCommenterAlignLeft
+    " vnoremap ,cm         <Plug>NERDCommenterMinimal
+    " vnoremap ,cn         <Plug>NERDCommenterNested
+    " vnoremap ,cs         <Plug>NERDCommenterSexy
+    vnoremap ,cu         <Plug>NERDCommenterUncomment
+    " vnoremap ,cy         <Plug>NERDCommenterYank
+endfunction
+
+" ==== VisIncr ====
+function! LoadVisIncr()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/VisIncr')
+        packadd VisIncr
+        call ConfigVisIncr()
+    endif
+endfunction
+
+function! ConfigVisIncr()
+    " 在这里配置 VisIncr（一般无需额外配置）
+endfunction
+
+
+" ==== fuzzbox.vim ====
+function! LoadFuzzbox()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/fuzzbox.vim')
+        packadd fuzzbox.vim
+        call ConfigFuzzbox()
+    endif
+endfunction
+
+function! ConfigFuzzbox()
+    " 在这里配置 fuzzbox.vim
+
+    let g:fuzzbox_ripgrep_options = [
+    \ "--no-config",
+    \ "--max-filesize=1M",
+    \ "--no-ignore-parent",
+    \ "--ignore-file " . expand('~/.ignore')
+    \ ]
+
+    " let g:fuzzbox_mappings = 0
+    nnoremap <silent> <leader>fb :FuzzyBuffers<CR>
+    nnoremap <silent> <leader>fc :FuzzyCommands<CR>
+    nnoremap <silent> <leader>ff :FuzzyFiles<CR>
+    nnoremap <silent> <leader>fg :FuzzyGrep<CR>
+    nnoremap <silent> <leader>fh :FuzzyHelp<CR>
+    nnoremap <silent> <leader>fi :FuzzyInBuffer<CR>
+    nnoremap <silent> <leader>fm :FuzzyMru<CR>
+    nnoremap <silent> <leader>fp :FuzzyPrevious<CR>
+    nnoremap <silent> <leader>fq :FuzzyQuickfix<CR>
+    nnoremap <silent> <leader>fr :FuzzyMruCwd<CR>
+endfunction
+
+" ==== Tabular ====
+function! LoadTabular()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/tabular')
+        packadd tabular
+        call ConfigTabular()
+    endif
+endfunction
+
+function! ConfigTabular()
+    " 在这里配置 tabular
+    nmap <Leader>a&     :Tabularize /&<CR>
+    vmap <Leader>a&     :Tabularize /&<CR>
+    nmap <Leader>a=     :Tabularize /^[^=]*\zs=<CR>
+    vmap <Leader>a=     :Tabularize /^[^=]*\zs=<CR>
+    nmap <Leader>a=>    :Tabularize /=><CR>
+    vmap <Leader>a=>    :Tabularize /=><CR>
+    nmap <Leader>a:     :Tabularize /:<CR>
+    vmap <Leader>a:     :Tabularize /:<CR>
+    nmap <Leader>a::    :Tabularize /:\zs<CR>
+    vmap <Leader>a::    :Tabularize /:\zs<CR>
+    nmap <Leader>a,     :Tabularize /,<CR>
+    vmap <Leader>a,     :Tabularize /,<CR>
+    nmap <Leader>a,,    :Tabularize /,\zs<CR>
+    vmap <Leader>a,,    :Tabularize /,\zs<CR>
+    nmap <Leader>a;     :Tabularize /;<CR>
+    vmap <Leader>a;     :Tabularize /;<CR>
+    nmap <Leader>a<Bar> :Tabularize /<Bar><CR>
+    vmap <Leader>a<Bar> :Tabularize /<Bar><CR>
+endfunction
+
+" ==== Vim-Easymotion ====
+function! LoadEasymotion()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-easymotion')
+        packadd vim-easymotion
+        call ConfigEasymotion()
+    endif
+endfunction
+
+function! ConfigEasymotion()
+    " 在这里配置 vim-easymotion
+    
+    " Beginning of word forward and backward
+    nmap <leader>jj <Plug>(easymotion-bd-w)
+    " words
+    nmap <leader>js <Plug>(easymotion-sn)
+    " Find {char} to bidirection
+    nmap <leader>jb <Plug>(easymotion-bd-f)
+endfunction
+
+" ==== vim-gutentags ====
+function! LoadGutentags()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-gutentags')
+        packadd vim-gutentags
+        call ConfigGutentags()
+    endif
+endfunction
+
+function! ConfigGutentags()
+    " 在这里配置 vim-gutentags
+    " enable gtags module
+    let g:gutentags_modules = ['ctags', 'gtags_cscope']
+
+    " change focus to quickfix window after search (optional).
+    let g:gutentags_plus_switch = 1
+
+    " disable the default keymaps
+    let g:gutentags_plus_nomap = 1
+
+    "let g:gutentags_define_advanced_commands = 1
+    "let g:gutentags_generate_on_new = 1
+    "let g:gutentags_generate_on_write = 1
+
+    " The marker files/directories for searching the project directory with gutentags. 
+    "  Recursion stops at the parent directory containing these names. Default is empty.
+    let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
+
+    " The name of the generated tags file. Default is 'tags'.
+    let g:gutentags_ctags_tagfile = '.tags'
+
+    " Place all automatically generated tags files into the ~/.cache/tags directory 
+    "  to avoid polluting the project directory.
+    let s:vim_tags = expand('~/.cache/tags')
+    let g:gutentags_cache_dir = s:vim_tags
+
+    " Check if ~/.cache/tags does not exist and create it if necessary.
+    if !isdirectory(s:vim_tags)
+       silent! call mkdir(s:vim_tags, 'p')
+    endif
+
+    " Configure ctags arguments. "
+    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+    let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+    let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+    noremap <silent> <leader>gs :GscopeFind s <C-R><C-W><cr>
+    noremap <silent> <leader>gg :GscopeFind g <C-R><C-W><cr>
+    noremap <silent> <leader>gc :GscopeFind c <C-R><C-W><cr>
+    noremap <silent> <leader>gt :GscopeFind t <C-R><C-W><cr>
+    noremap <silent> <leader>ge :GscopeFind e <C-R><C-W><cr>
+    noremap <silent> <leader>gf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+    noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+    noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
+    noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+    noremap <silent> <leader>gz :GscopeFind z <C-R><C-W><cr>
+
+    function! SetGutentagsForCurrentProject()
+        " 取 gutentags 缓存目录（可自定义）
+        let l:cache_dir = get(g:, 'gutentags_cache_dir', expand('~/.cache/tags'))
+
+        " 当前项目路径，去掉开头的 / 或 \
+        let l:project_path = substitute(getcwd(), '^[\\/]', '', '')
+
+        " 替换 / 为 -
+        let l:project_tag_base = substitute(l:project_path, '[\\/]', '-', 'g')
+
+        " 按默认命名规则拼路径
+        let l:tag_filename = l:cache_dir . '/' . l:project_tag_base . '-.tags'
+
+        " 判断存在，设置 tags
+        if filereadable(l:tag_filename)
+            execute 'set tags=' . fnameescape(l:tag_filename)
+            "echo '已切换 Gutentags tags 文件: ' . l:tag_filename
+        else
+            echohl WarningMsg
+            echo 'no found Gutentags tags 文件: ' . l:tag_filename
+            echohl None
+        endif
+    endfunction
+    autocmd VimEnter * call SetGutentagsForCurrentProject()
+endfunction
+
+" ==== vim-buftabline ====
+function! LoadBuftabline()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-buftabline')
+        packadd vim-buftabline
+        call ConfigBuftabline()
+    endif
+endfunction
+
+function! ConfigBuftabline()
+    " 在这里配置 vim-buftabline
+endfunction
+
+" ==== vim-bookmarks ====
+function! LoadBookmarks()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-bookmarks')
+        packadd vim-bookmarks
+        call ConfigBookmarks()
+    endif
+endfunction
+
+function! ConfigBookmarks()
+    let g:bookmark_auto_close = 1
+    let g:bookmark_highlight_lines = 1
+    let g:bookmark_center = 1
+    "let g:bookmark_save_per_working_dir = 1
+    let g:bookmark_auto_save = 1
+    let g:bookmark_auto_save_file = expand('~/.vimbookmarks/bookmarks')
+    
+    "let g:bookmark_location_list = 1
+
+    let g:bookmark_no_default_key_mappings = 1
+    nmap <Leader>mm <Plug>BookmarkToggle
+    nmap <Leader>mi <Plug>BookmarkAnnotate
+    nmap <Leader>ma <Plug>BookmarkShowAll
+    nmap <Leader>mc <Plug>BookmarkClear
+    nmap <Leader>mx <Plug>BookmarkClearAll
+    nmap <Leader>mj <Plug>BookmarkNext
+    nmap <Leader>mk <Plug>BookmarkPrev
+    nmap <Leader>mkk <Plug>BookmarkMoveUp
+    nmap <Leader>mjj <Plug>BookmarkMoveDown
+    nmap <Leader>mg <Plug>BookmarkMoveToLine
+
+    "highlight link BookmarkLine <Color>
+    " <color>:  SpellBad Search DiffChange DiffDelete, use :highlight
+    "highlight BookmarkLine ctermfg=17 ctermbg=45 guifg=#00005f guibg=#00dfff
+    highlight BookmarkLine ctermbg=23 guibg=#005f5f
+    highlight BookmarkAnnotationLine ctermbg=24 guibg=#005f87
+endfunction
+
+" ==== vim-auto-popmenu ====
+function! LoadVimAutoPopmenu()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-auto-popmenu')
+        packadd vim-auto-popmenu
+        call ConfigVimAutoPopmenu()
+    endif
+endfunction
+
+function! ConfigVimAutoPopmenu()
+    " 在这里配置 vim-auto-popmenu
+    " enable this plugin for filetypes, '*' for all files.
+    " let g:apc_enable_ft = {'*':1}
+    let g:apc_enable_ft = {'text':1, 'markdown':1, 'sh':1, 'tcsh':1, 'python':1}
+
+    " source for dictionary, current or other loaded buffers, see ':help cpt'
+    set cpt=.,k,w,b
+
+    " suppress annoy messages.
+    set shortmess+=c
+
+    " 1) Tab 开关：1=启用 Tab/S-Tab 行为；0=不启用
+    let g:apc_enable_tab = 0
+
+    " 2) 回车确认开关：
+    " 0=补全可见时 <CR> 执行 <C-y><CR>（确认并换行）
+    " 1=补全可见时 <CR> 只执行 <C-y>（只确认，不换行）
+    let g:apc_cr_confirm = 1
+
+endfunction
+
+" ==== rainbow ====
+function! LoadRainbow()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/rainbow')
+        packadd rainbow
+        call ConfigRainbow()
+    endif
+endfunction
+
+function! ConfigRainbow()
+    " 在这里配置 Rainbow
+    let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+    let g:rainbow_conf = {
+    \   'guifgs': ['#FF5555', '#50FA7B', '#BD93F9', '#F1FA8C', '#FF79C6', '#8BE9FD'],
+    \   'ctermfgs': ['203', '34', '135', '228', '205', '81'],
+    \	'guis': [''],
+    \	'cterms': [''],
+    \	'operators': '_,_',
+    \	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+    \	'separately': {
+    \		'*': {},
+    \		'markdown': {
+    \			'parentheses_options': 'containedin=markdownCode contained',
+    \		},
+    \		'vim': {
+    \			'parentheses_options': 'containedin=vimFuncBody',
+    \		},
+    \		'perl': {
+    \			'syn_name_prefix': 'perlBlockFoldRainbow',
+    \		},
+    \		'stylus': {
+    \			'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
+    \		},
+    \		'css': 0,
+    \		'nerdtree': 0,
+    \	}
+    \}
+
+    " nnoremap <leader>i :RainbowToggle<CR>
+    " call timer_start(100, {tid -> execute('RainbowToggle')})
+    RainbowToggle
+
+    augroup rainbow_autoload
+        autocmd!
+        autocmd Syntax * call rainbow_main#load()
+        autocmd ColorScheme * call rainbow_main#load()
+    augroup END
+endfunction
+
+" ==== Startify ====
+function! LoadStartify()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/vim-startify')
+        packadd vim-startify
+        call ConfigStartify()
+    endif
+endfunction
+
+function! ConfigStartify()
+    " 在这里配置 Startify
+        " Display the Startify interface upon Vim start if no files were specified
+    autocmd VimEnter * if !argc() | Startify | endif
+    " map <C-/> == <C-_>, '/'='_'
+    nnoremap <leader>m :Startify<CR>
+    " Set the number of most recently used files to display in the Startify list
+    let g:startify_files_number = 10
+
+    " Customize the Startify interface title
+    " let g:startify_custom_header = 'echo split("Welcome to Vim", "\n")'
+
+    " Add bookmarks to Startify
+    let g:startify_bookmarks = [
+            \ { 'i': '~/.vimrc' },
+            \ { 'z': '~/.zshrc' }
+            \ ]
+
+    " Set the directory where Startify sessions are stored
+    let g:startify_session_dir = '~/.vimsessions'
+
+    " Automatically save the session when exiting Vim
+    let g:startify_session_persistence = 1
+
+    " Disable Unicode art in the Startify interface
+    let g:startify_fortune_use_unicode = 0
+    
+    " Customize the layout of the Startify list
+    let g:startify_lists = [
+            \ { 'type': 'sessions',  'header': ['   Sessions']       },
+            \ { 'type': 'files',     'header': ['   Recent Files (MRU)']   },
+            \ { 'type': 'dir',       'header': ['   Current Directory (MRU): '. getcwd()] },
+            \ { 'type': 'bookmarks', 'header': ['   Bookmarks']      },
+            \ { 'type': 'commands',  'header': ['   Commands']       }
+            \ ]
+
+endfunction
+
+" ==== asyncrun.vim ====
+function! LoadAsyncrun()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/asyncrun.vim')
+        packadd asyncrun.vim
+        call ConfigAsyncrun()
+    endif
+endfunction
+
+function! ConfigAsyncrun()
+    " 在这里配置 asyncrun.vim
+endfunction
+
+" ==== terminal-help ====
+function! LoadTerminalhelp()
+    call ConfigTerminalhelp()
+endfunction
+
+function! ConfigTerminalhelp()
+    " 在这里配置 terminal-help
+
+    function! s:TermToggleOrOpen() abort
+            " 1) 先在现有 buffer 里找 terminal
+            for b in range(1, bufnr('$'))
+                if bufexists(b) && getbufvar(b, '&buftype') ==# 'terminal'
+                " 已有 terminal：用 split 打开它
+                execute 'botright sbuffer' b
+                return
+            endif
+        endfor
+        " 2) 没找到：新建一个 terminal（下方分屏）
+        terminal
+    endfunction
+
+    nnoremap <leader>= :call <SID>TermToggleOrOpen()<CR>
+
+    augroup TermKey
+        autocmd!
+        " nnoremap <leader>= :botright split \| terminal<CR>
+        " nnoremap <leader>= :call <SID>TermToggleOrOpen()<CR>
+
+        " Alt-- 关闭窗口，不关闭buffer（相当于 :hide）, :sb 2 回到终端输入
+        autocmd TerminalWinOpen * tnoremap <buffer> <leader>0 <C-\><C-n>
+        autocmd TerminalWinOpen * tnoremap <buffer> <leader>- <C-\><C-n>:hide<CR>
+        autocmd TerminalWinOpen * nnoremap <buffer> <leader>- :hide<CR>
+
+        " Alt-q 关闭窗口，关闭buffer
+        autocmd TerminalWinOpen * tnoremap <buffer> <leader>q <C-\><C-n>:bd!<CR>
+        autocmd TerminalWinOpen * nnoremap <buffer> <leader>q :bd!<CR>
+    augroup END
+endfunction
+
+" ==== colorizer ====
+function! LoadColorizer()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/colorizer')
+        packadd colorizer
+        call ConfigColorizer()
+    endif
+endfunction
+
+function! ConfigColorizer()
+    " 在这里配置 colorizer
+    let g:colorizer_startup = 0  " disbale colorizer at startup
+    "let g:colorizer_maxlines = 5000
+    let g:colorizer_nomap = 1    " completely not to map key
+
+    nnoremap <leader>v :ColorToggle<CR>
+endfunction
+
+" ==== XXXX ====
+function! LoadXXXX()
+    if isdirectory(s:vim_base . 'pack/vendor/opt/XXXX')
+        packadd XXXX
+        call ConfigXXXX()
+    endif
+endfunction
+
+function! ConfigXXXX()
+    " 在这里配置 XXXX
+endfunction
+
+" === 定义延迟加载插件的函数 ===
+function! LoadMyPlugins()
+    call LoadStartify()
+
+    " if exists('$HOSTNAME') && index(['anta-test06.ant.eda.com', 'anta-z3run01.ant.eda.com', 'anta-z3run02.ant.eda.com'], $HOSTNAME) < 0
+    " if index(['anta-test06.ant.eda.com', 'anta-z3run01.ant.eda.com', 'anta-z3run02.ant.eda.com'], $HOSTNAME) < 0
+        call LoadLeaderF()
+    " endif
+    
+    call LoadNerdtree()
+    call LoadTagbar()
+    call LoadIilluminate()
+    call LoadVimdict()
+    " call LoadAutoComplPop()
+    call LoadVimAutoPopmenu()
+    call LoadVimInterestingwords()
+    call LoadNerdcommenter()
+    call LoadVisIncr()
+    call LoadFuzzbox()
+    call LoadTabular()
+    call LoadEasymotion()
+    call LoadGutentags()
+    " call LoadBuftabline()
+    call LoadBookmarks()
+    call LoadRainbow()
+    call LoadAsyncrun()
+    call LoadTerminalhelp()
+    call LoadColorizer()
+endfunction
+
+if has('timers')
+    " 延迟 500ms 后调用函数
+    call timer_start(200, { -> LoadMyPlugins() })
+else
+    " 老版本用 VimEnter 事件触发
+    autocmd VimEnter * call LoadMyPlugins()
+endif

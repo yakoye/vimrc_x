@@ -1,0 +1,367 @@
+filetype on                     "启动文件类型检查
+filetype plugin on              "运行vim加载文件类型插件
+filetype indent on              "根据文件类型进行缩进
+syntax  on                      "开启语法高亮功能
+color  desert                   "设置主题
+
+set t_Co=256                    " Enable 256 colors
+let mapleader=' '               " Set the leader key
+
+scriptencoding utf-8
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,chinese,taiwan,japan,korea
+
+set number                      "显示行号
+set visualbell                  "禁止响铃
+set ruler                       "显示当前光标位置
+set autoread                    "文件在Vim之外修改过，自动重新读入
+set autowrite                   "设置自动保存内容
+set autochdir                   "当前目录随着被编辑文件的改变而改变
+set nocp                        "使用vim而非vi
+set mouse=a                     "开启鼠标支持
+set backspace=indent,eol,start  " indent：允许删除自动缩进。eol：允许删除到上一行。start：允许 Backspace 删除到插入模式开始的位置。
+set wildmenu                    " Show list instead of just completing, 按TAB键时命令行自动补齐
+set wildmode=list:longest,full  " Command <Tab> completion, list matches, then longest common part, then all.
+set whichwrap=b,s,h,l,<,>,[,]   " Backspace and cursor keys wrap too
+set nowrap                      " Do not wrap long lines
+set showmode                    " Display the current mode
+
+set autoindent                  "参考上一行的缩进方式进行自动缩进
+set shiftwidth=4                "每一级缩进的长度
+set expandtab                   " Tabs are spaces, not tabs
+set tabstop=4                   " Let backspace delete indent
+set softtabstop=4               "在编辑模式的时候按退格键的时候退回缩进的长度
+
+set hlsearch                    " 开启搜索结果的高亮显示"
+set incsearch                   " Find as you type search, 边输入边搜索(实时搜索)
+set ignorecase                  " Case insensitive search
+set smartcase                   " Case sensitive when uc present
+set showmatch                   " Show matching brackets/parenthesis
+
+set autochdir                   " Automatically switch the working directory
+set scrolljump=1                " Lines to scroll when cursor leaves screen
+set scrolloff=3                 " Minimum lines to keep above and below cursor
+
+set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
+set splitright                  " Puts new vsplit windows to the right of the current
+set splitbelow                  " Puts new split windows to the bottom of the current
+
+let mapleader = ' '
+let g:maplocalleader = ','
+
+" '50     file mark, recent opened file is 50.
+" <50     Registers, Maximum number of lines saved for each register.
+" /50     Search String History, Maxmum number of items in the search pattern history to be saved.
+" :50     Command Line History, number is 50
+" h       Disable the effect of 'hlsearch' when loading the viminfo file.
+" r$TEMP: Removable media. Don't save TEMP info.
+" s10     Maximum size of an item in KBytes, 10KB
+" n/tmp/.viminfo
+" setviminfofile=/tmp/.viminfo
+"set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,/tmp/pengyu/.viminfo
+" ! use to SessionOpenLast, save and restore global variables
+set viminfo='50,<50,/50,:50,h,r$TEMP:,s10,!
+
+set cursorline cursorcolumn     " 高亮显示当前行和当前列
+" augroup cch
+"     autocmd!
+"     autocmd WinLeave * setlocal nocursorline nocursorcolumn
+"     autocmd WinEnter * setlocal cursorline cursorcolumn
+" augroup END
+
+function! CheckVimMode()
+    let l:mode = mode()
+    if l:mode ==# 'n'
+        return "NORMAL"
+    elseif l:mode ==# 'i'
+        return "INSERT"
+    elseif l:mode ==# 'v'
+        return "VISUAL"
+    elseif l:mode ==# 'V'
+        return "V-LINE"
+    elseif l:mode ==# "\<C-v>"
+        return "V-BLOCK"
+    elseif l:mode ==# 'c'
+        return "COMMAND"
+    elseif l:mode ==# 'R'
+        return "REPLACE"
+    elseif l:mode ==# 'R'
+        return "REPLACE"
+    else
+        return l:mode
+    endif
+endfunction
+
+" Configure the status bar
+highlight HLCMode        guifg=#af87d7 ctermfg=234  ctermbg=190
+highlight HLCPath        guifg=#af87d7 ctermfg=100  ctermbg=238
+highlight HLCFileName    guifg=#d7ff00 ctermfg=190  ctermbg=238
+highlight HLCFileType    guifg=#d7ff00 ctermfg=140  ctermbg=236
+highlight HLCLineNum     guifg=#afd787 ctermfg=234  ctermbg=190
+if has('statusline')
+    set laststatus=2                "是否显示状态栏。0 表示不显示，1 表示只在多窗口时显示，2 表示显示。
+
+    " Broken down into easily includeable segments
+    " 设置状态行
+    set statusline=%#HLCMode#
+    set statusline+=\ %{CheckVimMode()}               " 显示当前模式
+    set statusline+=\ %#HLCFileName#%(\ %<%f%)          " Filename
+    "set statusline+=\ %#HLCPath#%{getcwd()}/          " Current dir
+    "set statusline=%<%f\                             " Filename
+    set statusline+=\ %w%h%m%r                        " Options
+    set statusline+=\ %=%#HLCFileType#%y\ %{&ff}           " Filetype
+    set statusline+=\ %#HLCLineNum#%(%l,%c%V%)\ \=\ %p%%  " Right aligned file nav info
+endif
+
+" Reopen the last edited position in files
+function! ResCur()
+    if line("'\"") <= line("$")
+        silent! normal! g`"
+        return 1
+    endif
+endfunction
+
+augroup resCur
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
+augroup END
+
+map 9 $                         "通过9跳转到行末尾,0默认跳转到行首
+map <silent>  <C-A>  gg v G     "Ctrl-A 选中所有内容
+
+" Visual shifting (does not exit Visual mode)
+vnoremap < <gv
+vnoremap > >gv
+
+" For when you forget to sudo.. Really Write the file.
+cmap w!! w !sudo tee % >/dev/null
+
+
+" This is used for the auto-completion feature
+" <CR> accepts first, then sends the <CR>
+" inoremap <expr><CR>    pumvisible() ? "\<C-y>" : "\<CR>"
+inoremap <expr><CR> pumvisible() ? (complete_info().selected != -1 ? "\<C-y>" : "\<C-e>\<CR>") : "\<CR>"
+inoremap <expr><TAB>   pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" 设置补全行为不自动插入
+set completeopt=menuone,noinsert,noselect
+" Set an autocmd for specific file types (python, c, cpp) to trigger the
+" smart_complete function
+autocmd FileType text,vim,python,c,cpp autocmd TextChangedI * call s:smart_complete()
+"autocmd TextChangedI * call s:smart_complete()
+
+let g:completion_trigger_length = 1
+function! s:smart_complete()
+    " Get the current column number, adjusting for zero-based index
+    let l:col = col('.') - 1
+    " Get the content of the current line up to the current column position
+    let l:line = getline('.')[0 : l:col-1]
+
+    " Debug: Uncomment the line below to print the current word being analyzed
+    " echom 'Current Word: ' . matchstr(l:line, '\v\w+$')
+  
+    " Check for an empty line or a whitespace character just before the
+    " cursor
+    if l:line =~ '^\s*$' || l:line[-1:] =~ '\s'
+        if pumvisible() | call feedkeys("\<C-E>") | endif
+        return
+    endif
+
+    " Extract the current word from the input line based on alphanumeric
+    " characters
+    let l:current_word = matchstr(l:line, '\v\w+$')
+    " Trigger completion if the current word length is greater than or equal
+    " to the threshold and the completion menu is not visible
+    if len(l:current_word) > g:completion_trigger_length && !pumvisible()
+        call feedkeys("\<C-N>", 'n')
+    endif
+endfunction
+
+" 优化Netrw显示
+" let g:netrw_banner = 0
+" let g:netrw_liststyle = 3
+let g:netrw_winsize = 30  " 设置默认窗口占比
+let g:netrw_altv = 1      " 强制在左侧打开新分割
+" let g:netrw_mousemaps = 0 " 关闭 netrw 的鼠标映射
+" let g:netrw_browse_split = 1  " 打开文件覆盖活跃窗口
+
+" 增强版左侧切换函数
+function! ToggleNetrwLeft()
+    let l:origin_win = winnr()
+    let l:curfile = expand('%:p')
+    let l:curfilename = expand('%:t')
+    let l:curdir = expand('%:p:h')
+    " 查找已存在netrw窗口
+    let l:netrw_winlist = filter(range(1, winnr('$')), 'getwinvar(v:val, "&filetype") ==# "netrw"')
+    if !empty(l:netrw_winlist)
+        " 目录已开，关闭之
+        execute l:netrw_winlist[0] . "wincmd w"
+        close
+        if l:origin_win <= winnr('$')
+            execute l:origin_win . "wincmd w"
+        else
+            execute winnr('$') . "wincmd w"
+        endif
+    else
+        " 跳到当前文件目录并开启netrw
+        execute 'silent! Lexplore! ' . fnameescape(l:curdir)
+        " 保证netrw在最左
+        wincmd H
+        vert resize 30
+        setlocal winfixwidth
+        setlocal nonumber norelativenumber
+        setlocal signcolumn=no
+        setlocal cursorline
+        nnoremap <buffer> <silent> q :close<CR>
+        " 自动切到右侧文件(主窗口)
+        augroup MyNetrwSwitch
+            autocmd!
+            autocmd BufLeave <buffer> if &filetype ==# 'netrw' && winnr('$') > 1 | wincmd l | endif
+        augroup END
+        " --- 自动选中文件, 类似NERDTreeFind ---
+        " 延迟一点确保 netrw 列表生成完毕
+        call timer_start(30, {-> execute('call search(' . string(l:curfilename) . ', "w")')}, {'repeat': 1})
+    endif
+endfunction
+nnoremap <silent> <leader>e :call ToggleNetrwLeft()<CR>
+
+
+function! JumpToFunctionList()
+    if &filetype ==# 'c' || &filetype ==# 'cpp' || &filetype ==# 'h' || &filetype ==# 'hpp'
+        let pattern = '^\s*\(void\|char\|int\|float\|double\|static\|bool\|unsigned\|long\|short\|struct\)\s\+\(\w\+\s*\*\s*\)*\w\+\s*('
+    elseif &filetype ==# 'python'
+        let pattern = '^\s*def\s\+\w\+\s*('
+    elseif &filetype ==# 'javascript'
+        let pattern = '^\s*function\s\+\w\+\s*('
+    elseif &filetype ==# 'java'
+        let pattern = '^\s*\(public\|private\|protected\)\?\s*\w\+\s\+\w\+\s*('
+    else
+        let pattern = '.*'
+    endif
+
+    cclose
+    silent! execute 'vimgrep/' . pattern . '/ %'
+    if len(getqflist()) > 0
+        copen
+    else
+        echo "No function definitions found."
+    endif
+endfunction
+nnoremap <silent> <leader>t :call JumpToFunctionList()<CR>
+
+function! ToggleComment()
+    let l:ft = &filetype
+    let l:line = getline('.')
+    if l:ft =~? '^\(c\|cpp\|h\|hpp\)$'
+        let l:comment = '//'
+    elseif l:ft =~? '^\(sh\|zsh\|shell\|bash\)$' || l:ft ==# 'python' || l:ft ==# 'make'
+        let l:comment = '#'
+    elseif l:ft ==# 'vim'
+        let l:comment = '"'
+    elseif l:ft ==# 'lua'
+        let l:comment = '--'
+    else
+        let l:comment = '#'
+    endif
+
+    if l:line =~# '^\s*' . escape(l:comment, '#/\"')
+        call setline('.', substitute(l:line, '^\(\s*\)' . escape(l:comment, '#/\"') . '\s\?', '\1', ''))
+    else
+        call setline('.', substitute(l:line, '^\s*', '\0' . l:comment . ' ', ''))
+    endif
+endfunction
+
+function! ToggleCommentVisual()
+    let l:start = line("'<")
+    let l:end = line("'>")
+    let l:ft = &filetype
+    if l:ft =~? '^\(c\|cpp\|h\|hpp\)$'
+        let l:comment = '//'
+    elseif l:ft =~? '^\(sh\|zsh\|shell\|bash\)$' || l:ft ==# 'python' || l:ft ==# 'make'
+        let l:comment = '#'
+    elseif l:ft ==# 'vim'
+        let l:comment = '"'
+    elseif l:ft ==# 'lua'
+        let l:comment = '--'
+    else
+        let l:comment = '#'
+    endif
+    let uncomment = 1
+    for lnum in range(l:start, l:end)
+        if getline(lnum) !~# '^\s*' . escape(l:comment, '#/\"')
+            let uncomment = 0
+            break
+        endif
+    endfor
+    for lnum in range(l:start, l:end)
+        let l:line = getline(lnum)
+        if uncomment
+            call setline(lnum, substitute(l:line, '^\(\s*\)' . escape(l:comment, '#/\"') . '\s\?', '\1', ''))
+        else
+            call setline(lnum, substitute(l:line, '^\s*', '\0' . l:comment . ' ', ''))
+        endif
+    endfor
+endfunction
+
+" 单行快捷键
+nnoremap <silent> <leader>c :call ToggleComment()<CR>
+" 可视块/多行快捷键
+vnoremap <silent> <leader>c :<C-u>call ToggleCommentVisual()<CR>
+
+
+" set nobackup                    " No backups
+" set noswapfile                  " No swap files
+" set nowritebackup               " No write backup
+
+" backup / undofile 
+set backup                  " Backups are nice ...
+if has('persistent_undo')
+    set undofile                " So is persistent undo ...
+    set undolevels=1000         " Maximum number of changes that can be undone
+    set undoreload=10000        " Maximum number lines to save for undo on a buffer reload
+endif
+
+" Initialize directories {
+function! InitializeDirectories()
+    let parent = $HOME
+    let prefix = 'vim'
+    let dir_list = {
+                \ 'backup':    'backupdir',
+                \ 'views':     'viewdir',
+                \ 'swap':      'directory' }
+
+    if has('persistent_undo')
+        let dir_list['undo'] = 'undodir'
+    endif
+
+    " To specify a different directory in which to place the vimbackup,
+    " vimviews, vimundo, and vimswap files/directories, add the following to
+    " your .vimrc.before.local file:
+    "   let g:mydefine_consolidated_directory = <full path to desired directory>
+    "   eg: let g:mydefine_consolidated_directory = $HOME . '/.vim/'
+    if exists('g:mydefine_consolidated_directory')
+        let common_dir = g:mydefine_consolidated_directory . prefix
+    else
+        let common_dir = parent . '/.' . prefix
+    endif
+
+    for [dirname, settingname] in items(dir_list)
+        let directory = common_dir . dirname . '/'
+        if exists("*mkdir")
+            if !isdirectory(directory)
+                call mkdir(directory)
+            endif
+        endif
+        if !isdirectory(directory)
+            echo "Warning: Unable to create backup directory: " . directory
+            echo "Try: mkdir -p " . directory
+        else
+            let directory = substitute(directory, " ", "\\\\ ", "g")
+            exec "set " . settingname . "=" . directory
+        endif
+    endfor
+endfunction
+call InitializeDirectories()
+" }
