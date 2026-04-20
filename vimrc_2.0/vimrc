@@ -1558,7 +1558,7 @@ function! ConfigRainbow()
 
     " nnoremap <leader>i :RainbowToggle<CR>
     " call timer_start(100, {tid -> execute('RainbowToggle')})
-    RainbowToggle
+    " RainbowToggle
 
     augroup rainbow_autoload
         autocmd!
