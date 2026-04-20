@@ -75,7 +75,8 @@ install_or_update_plugins() {
             fi
             
             echo "⬇️  正在下载全新插件：$repo"
-            git clone --depth=1 "git@github.com:$repo.git" "$dir" || echo "❌ [$dir] 下载失败！请检查 SSH 密钥或网络。"
+            # git clone --depth=1 "git@github.com:$repo.git" "$dir" || echo "❌ [$dir] 下载失败！请检查 SSH 密钥或网络。"
+            git clone --depth=1 "https://github.com/$repo.git" "$dir" || echo "❌ [$dir] 下载失败！请检查 SSH 密钥或网络。"
         fi
     done
 
