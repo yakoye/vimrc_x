@@ -1,0 +1,28 @@
+
+需要安装的插件有：
+$ ls
+asyncrun.vim    nerdcommenter     vim-bookmarks         vim-preview
+AutoComplPop    nerdtree          vim-buftabline        vim-quickui
+bundles         rainbow           vim-dict              vim-startify
+bundles.tar.gz  readme.txt        vim-easymotion        vim-terminal-help
+Colorizer       tabular           vim-gutentags         VisIncr
+fuzzbox.vim     tagbar            vim-illuminate
+LeaderF         vim-auto-popmenu  vim-interestingwords
+
+
+
+AutoComplPop		   自动弹出代码补全菜单（不需手动触发）
+LeaderF				   高性能模糊搜索（文件、内容、函数、缓冲区等）
+nerdcommenter		   快速批量添加/删除代码注释
+nerdtree			   文件树浏览器，在侧边栏管理项目文件
+tabular				   对齐文本或代码（按符号/表格整齐排列）
+vim-illuminate         自动高亮显示当前光标下所有相同的单词
+vim-interestingwords   用不同颜色高亮多个感兴趣的单词
+VisIncr                数字/字母序列生成
+fuzzbox.vim            用原生 Vim 弹窗实现的快速模糊搜索器，跨平台、无额外依赖。
+
+需要安装的工具有，windows端口有exe：
+ctags
+global
+ripgrep
+
