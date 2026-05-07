@@ -870,7 +870,16 @@ function! ConfigLeaderF()
         " should use `Leaderf gtags --update` first
         let g:Lf_GtagsAutoGenerate = 1
         let g:Lf_GtagsAutoUpdate = 1
+
+        " 在 Windows 中若出现gtags error，可以尝试：
+        " 在系统环境变量中添加：
+        "   变量名：GTAGSCONF
+        "   变量值：C:\你的路径\share\gtags\gtags.conf
+        " 在 Vim 配置中添加：
+        " let $GTAGSCONF = 'C:/你的路径/share/gtags/gtags.conf'
         let g:Lf_Gtagslabel = 'native-pygments'
+        " let g:Lf_Gtagslabel = 'default'
+
         " gtags update
         nnoremap <leader>gu :Leaderf gtags --update<CR>
         " 跳到定义
@@ -995,12 +1004,21 @@ function! ConfigNerdtree()
         endif
 
         " 判断 NERDTree 窗口是否存在
-        let l:tree_visible = exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
-
+        " let l:tree_visible = exists('t:NERDTreeBufName') && bufwinnr(t:NERDTreeBufName) != -1
+        if exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+            silent! NERDTreeToggle
+        else
+            if expand('%:p') !=# '' && &buftype ==# ''
+                silent! NERDTreeFind
+            else
+                silent! NERDTreeToggle
+            endif
+        endif
+        
         " 无论树是否存在，都定位到当前文件：
         " - 不存在时，NERDTreeFind 会自动打开树并定位
         " - 存在时，NERDTreeFind 只会定位
-        silent! NERDTreeFind
+        " silent! NERDTreeFind
     endfunction
 
     nnoremap <C-e> :call NERDTreeToggleAndFind()<CR>
@@ -1730,3 +1748,4 @@ else
     " 老版本用 VimEnter 事件触发
     autocmd VimEnter * call LoadMyPlugins()
 endif
+let g:python3_host_prog = '/c/Program Files/Python312/python.exe'
